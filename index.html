@@ -2003,15 +2003,20 @@ ${reflection}`;
         html2pdf().set(opt).from(element).outputPdf('datauristring').then(function(pdfBase64) {
             const gasUrl = 'https://script.google.com/macros/s/AKfycbxJne57O2rHVUpHNJC6ZUmF26niaScA9TDCsrSRnumrZDx6ruaQ4Zgrm7FLK2sG64np/exec';
 
+            
             const payload = {
-                className: cls,
-                studentNo: no,
-                studentName: name,
-                studentEmail: email,
-                fileName: fileNameStr,
-                summaryText: summary,
-                pdfBase64: pdfBase64
-            };
+            // 新舊名稱雙保險，讓 GAS 後端絕對抓得到
+            className: cls,
+            stuClass: cls,
+            studentNo: no,
+            stuNo: no,
+            studentName: name,
+            stuName: name,
+            studentEmail: email,
+            fileName: fileNameStr,
+            summaryText: summary,
+            pdfBase64: pdfBase64
+        };
 
             fetch(gasUrl, {
                 method: "POST",
