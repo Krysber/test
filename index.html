@@ -1682,7 +1682,7 @@
             dairy: `${dTotal} 杯`,
             veg: `${vTotal} 份`,
             fruit: `${fTotal} 份`,
-            oilNut: `油脂 ${oTotal} 份 + 堅果 1 份`
+            oilNut: `油脂 ${nTotal} 份 + 堅果 1 份`
         };
         document.getElementById('portion-grain').innerText = `${gTotal} 碗`;
         document.getElementById('portion-grain-detail').innerText = `(未精製 ${gUnref} 碗 + 其他 ${gRef} 碗)`;
@@ -1691,7 +1691,9 @@
         document.getElementById('portion-veg').innerText = `${vTotal} 份`;
         document.getElementById('portion-fruit').innerText = `${fTotal} 份`;
         document.getElementById('portion-oil-nut').innerText = `${oTotal} 份`;
-        document.getElementById('portion-oil-nut-detail').innerText = `(烹調油脂 ${oTotal} 份 + 堅果 1 份)`;
+        
+        // 🎯 修正處：將括號內的烹調油脂份數由 oTotal（總份數）改為 nTotal（油脂茶匙數）
+        document.getElementById('portion-oil-nut-detail').innerText = `(烹調油脂 ${nTotal} 份 + 堅果 1 份)`;
     }
 
     function getSelectedSportInfo(selectId) {
