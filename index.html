@@ -1676,7 +1676,10 @@
         return Math.round(weight * 7.5); // moderate
     }
 
-     function setOfficialPortions(gUnref, gRef, gTotal, pTotal, dTotal, vTotal, fTotal, oTotal, nTotal) {
+function setOfficialPortions(gUnref, gRef, gTotal, pTotal, dTotal, vTotal, fTotal, oTotal, nTotal) {
+        // 🎯 用總份數減去 1 份堅果，算出正確的烹調油脂份數，維持下方連動與字串相容
+        const oilOnly = Number(oTotal) - 1; 
+
         currentOfficialPortions = {
             grain: `${gTotal} 碗 (未精製 ${gUnref} 碗 + 其他 ${gRef} 碗)`,
             protein: `${pTotal} 份`,
@@ -1692,8 +1695,14 @@
         document.getElementById('portion-veg').innerText = `${vTotal} 份`;
         document.getElementById('portion-fruit').innerText = `${fTotal} 份`;
         document.getElementById('portion-oil-nut').innerText = `${oTotal} 份`;
-        document.getElementById('portion-oil-nut-detail').innerText = `(烹調油脂 ${oTotal} 份 + 堅果 1 份)`;
+        
+        // 🎯 括號內明細改抓計算後的烹調油脂份數 (oilOnly)
+        document.getElementById('portion-oil-nut-detail').innerText = `(烹調油脂 ${oilOnly} 份 + 堅果 1 份)`;
     }
+
+
+
+    
 
     function getSelectedSportInfo(selectId) {
         const sel = document.getElementById(selectId);
