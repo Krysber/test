@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TEST 九年級青少年健康體型計畫與熱量平衡計算器 V11.0</title>
+    <title>115-1 九年級青少年健康體型計畫與熱量平衡計算器 V11.0</title>
     <!-- 載入 html2pdf.js 庫供自動轉換 PDF 上傳 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -174,9 +174,12 @@
         .hint-ok { color: #276749; }
         .hint-warn { color: #b7791f; }
 
+        /* 📐 熱量平衡算式區塊優化與放大 */
         .formula-box {
-            background-color: #2d3748; color: #f7fafc; padding: 15px; border-radius: 8px;
-            font-family: monospace; margin: 15px 0; font-size: 0.9rem;
+            background-color: #2d3748; color: #f7fafc; padding: 20px; border-radius: 10px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            margin: 15px 0; font-size: 1.05rem; line-height: 1.8;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         .custom-sport-box {
@@ -184,7 +187,7 @@
         }
 
         .progress-bar-bg {
-            background-color: #e2e8f0; border-radius: 10px; height: 16px; width: 100%; margin-top: 8px; overflow: hidden; position: relative;
+            background-color: #e2e8f0; border-radius: 10px; height: 18px; width: 100%; margin-top: 12px; overflow: hidden; position: relative;
         }
         .progress-bar-fill {
             height: 100%; width: 50%; background: linear-gradient(90deg, #38a169, #319795); transition: width 0.4s ease;
@@ -320,8 +323,8 @@
                     <option value="gain_weight" selected>增加體重（以健康行為為主）</option>
                     <option value="gain_muscle">增進肌力與肌肉發展</option>
                     <option value="maintain">維持健康與規律生活</option>
-                    <option value="lose_weight">減重（以調整飲食與運動習慣為主）</option>
-                    <option value="lose_fat">減脂（以調整飲食與運動習慣為主）</option>
+                    <option value="lose_weight">減重（以調整飲食與健康習慣為主）</option>
+                    <option value="lose_fat">減脂（以調整飲食與健康習慣為主）</option>
                 </select>
             </div>
             <div class="form-group">
@@ -470,7 +473,7 @@
                         <option value="蒸地瓜/烤地瓜">蒸地瓜/烤地瓜 (未精製)</option>
                         <option value="蒸南瓜/芋頭">蒸南瓜/芋頭 (未精製)</option>
                         <option value="傳統飯糰">傳統飯糰</option>
-                        <option value="蘿蔔膏">蘿蔔膏</option>
+                        <option value="蘿蔔糕">蘿蔔糕</option>
                         <option value="蛋餅皮/蔥抓餅">蛋餅皮/蔥抓餅</option>
                         <option value="全麥饅頭/鮮奶饅頭">全麥饅頭/鮮奶饅頭</option>
                         <option value="無糖穀物麥片">無糖穀物麥片</option>
@@ -1104,15 +1107,23 @@
         </div>
     </div>
 
-        <!-- 熱量平衡算式公式與動態呼應 -->
+        <!-- 📐 熱量平衡算式公式與動態放大解析區塊 -->
         <div class="formula-box">
-            📐 <strong>熱量平衡算式：</strong><br>
-            目標卡路里 (<span id="f-target" style="color:#f6ad55; font-weight:bold;">0</span>) = 每日飲食卡路里 (<span id="f-diet" style="color:#68d391; font-weight:bold;">0</span>) - [ 基礎代謝 BMR (<span id="f-bmr">0</span>) + 日常 NEAT (<span id="f-neat">0</span>) + 每日運動 EAT (<span id="f-sport" style="color:#63b3ed; font-weight:bold;">0</span>) ]
+            <div style="font-size: 1.15rem; margin-bottom: 8px; font-weight: bold; color: #63b3ed;">📐 熱量平衡算式解析</div>
+            <div style="font-size: 1.05rem; margin-bottom: 12px; word-break: break-all; font-family: monospace;">
+                目標卡路里 (<span id="f-target" style="color:#f6ad55; font-weight:bold; font-size:1.15rem;">0</span>) = 每日飲食卡路里 (<span id="f-diet" style="color:#68d391; font-weight:bold; font-size:1.15rem;">0</span>) - [ 基礎代謝 BMR (<span id="f-bmr" style="font-size:1.05rem;">0</span>) + 日常 NEAT (<span id="f-neat" style="font-size:1.05rem;">0</span>) + 每日運動 EAT (<span id="f-sport" style="color:#63b3ed; font-weight:bold; font-size:1.15rem;">0</span>) ]
+            </div>
             
             <div class="progress-bar-bg" title="發育健康狀態指標">
                 <div id="progress-bar-fill" class="progress-bar-fill"></div>
             </div>
-            <div style="font-size:0.75rem; text-align:right; margin-top:2px; color:#cbd5e0;" id="progress-status-text">綠色區域：青少年生理發育安全熱量範圍</div>
+            <div style="font-size:0.85rem; text-align:right; margin-top:4px; color:#cbd5e0;" id="progress-status-text">綠色區域：青少年生理發育安全熱量範圍</div>
+
+            <!-- 新增：運動消耗範圍警示提示 (動態變色) -->
+            <div id="formula-sport-alert" style="margin-top: 12px; padding: 10px 14px; border-radius: 6px; font-size: 0.95rem; font-family: sans-serif; display: none;"></div>
+            
+            <!-- 新增：實際目標與計畫目標落差過大提示 -->
+            <div id="formula-excess-alert" style="margin-top: 8px; padding: 10px 14px; border-radius: 6px; font-size: 0.95rem; font-family: sans-serif; display: none;"></div>
         </div>
 
         <div id="diet-range-alert" class="alert-box alert-danger" style="display: none; margin-bottom: 12px;" role="alert" aria-live="polite"></div>
@@ -1572,7 +1583,7 @@
                 setOfficialPortions("1.5", "3", "4.5", "8", "2", "5", "4", "8", "1");
             } else {
                 dietTierName = "男 (稍低) 2400 kcal 級距"; minDiet = 1635; maxDiet = 2400;
-               setOfficialPortions("1.5", "2.5", "4", "6", "1.5", "5", "4", "7", "1");
+                setOfficialPortions("1.5", "2.5", "4", "6", "1.5", "5", "4", "7", "1");
             }
         } else {
             if (palLevel === 'moderate' || palLevel === 'heavy') {
@@ -1621,10 +1632,7 @@
         // -------------------------------------------------------------
         // 2. 熱量平衡算式顯示（計畫的目標卡路里 vs 實際的目標卡路里）
         // -------------------------------------------------------------
-        // 計畫的目標卡路里：依據使用者在「短期健康計畫」選擇的體重變化 (`dailyTargetCal`)
         const plannedTargetCal = dailyTargetCal;
-        
-        // 實際的目標卡路里：依據下方飲食卡路里與運動消耗計算出來的實際差值
         const rawActualTarget = Math.round(currentDietCal - (finalBmr + neat + avgDailyEat));
         let actualTargetCal = rawActualTarget;
 
@@ -1645,13 +1653,12 @@
             dietAlertBox.style.display = 'none';
         }
 
-        // 顯示規則：預設以「計畫的目標卡路里」為主。若因飲食或運動調整導致實際卡路里與計畫有落差（或觸發上下限防呆），則同時呈現「計畫目標卡路里」與「實際目標卡路里」雙欄位參考
         const targetDisplayElem = document.getElementById('f-target');
         const formattedPlanned = (plannedTargetCal > 0 ? '+' : '') + plannedTargetCal;
         const formattedActual = (actualTargetCal > 0 ? '+' : '') + actualTargetCal;
 
         if (plannedTargetCal !== actualTargetCal || isClamped) {
-            targetDisplayElem.innerHTML = `${formattedPlanned} <span style="font-size:0.8rem; color:#f6ad55; font-weight:normal;">(實際目標卡路里: ${formattedActual})</span>`;
+            targetDisplayElem.innerHTML = `${formattedPlanned} <span style="font-size:0.85rem; color:#f6ad55; font-weight:normal;">(實際目標: ${formattedActual})</span>`;
         } else {
             targetDisplayElem.innerText = formattedPlanned;
         }
@@ -1666,6 +1673,50 @@
         const progressPercent = Math.min(Math.max(((currentDietCal - minDiet) / (maxDiet - minDiet)) * 100, 5), 100);
         barFill.style.width = progressPercent + '%';
 
+        // -------------------------------------------------------------
+        // 3. 運動卡路里範圍警示 & 實際目標卡路里過高/過低落差提示邏輯
+        // -------------------------------------------------------------
+        const sportAlertElem = document.getElementById('formula-sport-alert');
+        if (sportAlertElem) {
+            if (avgDailyEat < 150) {
+                sportAlertElem.style.display = 'block';
+                sportAlertElem.style.backgroundColor = '#fffaf0';
+                sportAlertElem.style.borderLeft = '4px solid #dd6b20';
+                sportAlertElem.style.color = '#9c4221';
+                sportAlertElem.innerHTML = `💡 <strong>【運動消耗區間提醒】</strong> 目前每日平均運動消耗 (EAT) 為 <strong>${avgDailyEat} kcal/日</strong>（偏低：&lt;150 大卡）。建議適度增加日常身體活動或規律運動，促進心肺適能與骨骼發展！`;
+            } else if (avgDailyEat <= 500) {
+                sportAlertElem.style.display = 'block';
+                sportAlertElem.style.backgroundColor = '#f0fff4';
+                sportAlertElem.style.borderLeft = '4px solid #38a169';
+                sportAlertElem.style.color = '#22543d';
+                sportAlertElem.innerHTML = `✅ <strong>【運動消耗區間提醒】</strong> 目前每日平均運動消耗 (EAT) 為 <strong>${avgDailyEat} kcal/日</strong>（適中：150 ~ 500 大卡）。符合青少年健康發展的良好運動範圍！`;
+            } else {
+                sportAlertElem.style.display = 'block';
+                sportAlertElem.style.backgroundColor = '#ebf8ff';
+                sportAlertElem.style.borderLeft = '4px solid #3182ce';
+                sportAlertElem.style.color = '#2b6cb0';
+                sportAlertElem.innerHTML = `🌟 <strong>【運動消耗區間提醒】</strong> 目前每日平均運動消耗 (EAT) 為 <strong>${avgDailyEat} kcal/日</strong>（高強度：&gt;500 大卡）。屬於高活動量或校隊水準，請務必補足充分營養與水分！`;
+            }
+        }
+
+        const excessAlertElem = document.getElementById('formula-excess-alert');
+        if (excessAlertElem) {
+            const diffCal = actualTargetCal - plannedTargetCal;
+            if (Math.abs(diffCal) > 250) {
+                excessAlertElem.style.display = 'block';
+                excessAlertElem.style.backgroundColor = '#fff5f5';
+                excessAlertElem.style.borderLeft = '4px solid #e53e3e';
+                excessAlertElem.style.color = '#9b2c2c';
+                if (diffCal > 0) {
+                    excessAlertElem.innerHTML = `⚠️ <strong>【熱量超額提示】</strong> 您的「實際目標卡路里」(${formattedActual}) 比原本計畫目標 (${formattedPlanned}) 高出超過 250 大卡！請留意飲食與運動熱量平衡，避免熱量過剩。`;
+                } else {
+                    excessAlertElem.innerHTML = `⚠️ <strong>【熱量落差提示】</strong> 您的「實際目標卡路里」(${formattedActual}) 比原本計畫目標 (${formattedPlanned}) 低超過 250 大卡！請注意熱量是否過低，確保青春期正常發育所需。`;
+                }
+            } else {
+                excessAlertElem.style.display = 'none';
+            }
+        }
+
         updateBodyAdvice(bmi, bmiLow, bmiOver, bmiObese, whr, whrCutoff, whtr, bodyfat, gender);
         onMealChange();
     }
@@ -1676,8 +1727,7 @@
         return Math.round(weight * 7.5); // moderate
     }
 
-function setOfficialPortions(gUnref, gRef, gTotal, pTotal, dTotal, vTotal, fTotal, oTotal, nTotal) {
-        // 🎯 用總份數減去 1 份堅果，算出正確的烹調油脂份數，維持下方連動與字串相容
+   function setOfficialPortions(gUnref, gRef, gTotal, pTotal, dTotal, vTotal, fTotal, oTotal, nTotal) {
         const oilOnly = Number(oTotal) - 1; 
 
         currentOfficialPortions = {
@@ -1695,14 +1745,8 @@ function setOfficialPortions(gUnref, gRef, gTotal, pTotal, dTotal, vTotal, fTota
         document.getElementById('portion-veg').innerText = `${vTotal} 份`;
         document.getElementById('portion-fruit').innerText = `${fTotal} 份`;
         document.getElementById('portion-oil-nut').innerText = `${oTotal} 份`;
-        
-        // 🎯 括號內明細改抓計算後的烹調油脂份數 (oilOnly)
         document.getElementById('portion-oil-nut-detail').innerText = `(烹調油脂 ${oilOnly} 份 + 堅果 1 份)`;
     }
-
-
-
-    
 
     function getSelectedSportInfo(selectId) {
         const sel = document.getElementById(selectId);
@@ -1826,7 +1870,6 @@ function setOfficialPortions(gUnref, gRef, gTotal, pTotal, dTotal, vTotal, fTota
             });
         });
 
-        // Dynamic range parser based on currentOfficialPortions strings
         const parseRange = (str, defMin, defMax) => {
             if (!str) return { min: defMin, max: defMax };
             const matches = str.match(/\d+(\.\d+)?/g);
@@ -1907,7 +1950,6 @@ function setOfficialPortions(gUnref, gRef, gTotal, pTotal, dTotal, vTotal, fTota
             Object.keys(data).forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
-                    // 🎯 微調：過濾掉 undefined 或字串 "undefined"，避免欄位被汙染
                     if (data[id] !== undefined && data[id] !== null && data[id] !== "undefined") {
                         if (el.type === 'checkbox') {
                             el.checked = data[id];
@@ -1953,7 +1995,6 @@ ${reflection}`;
     }
 
     function submitToGoogleDrive() {
-        // 🎯 採用舊版本乾淨俐落的抓取方式，並加上基本的空白清除
         const cls = document.getElementById('stu-class').value.trim();
         const no = document.getElementById('stu-no').value.trim();
         const name = document.getElementById('stu-name').value.trim();
@@ -1977,7 +2018,6 @@ ${reflection}`;
         const element = document.getElementById('pdf-content');
         element.style.backgroundColor = "#ffffff";
 
-        // 🎯 直接在 opt 中明確指定檔名，確保變數正確帶入
         const fileNameStr = `${cls}_${no}_${name}_健康計畫單.pdf`;
         const opt = {
             margin:       [0.4, 0.4, 0.4, 0.4],
@@ -2003,20 +2043,18 @@ ${reflection}`;
         html2pdf().set(opt).from(element).outputPdf('datauristring').then(function(pdfBase64) {
             const gasUrl = 'https://script.google.com/macros/s/AKfycbxJne57O2rHVUpHNJC6ZUmF26niaScA9TDCsrSRnumrZDx6ruaQ4Zgrm7FLK2sG64np/exec';
 
-            
             const payload = {
-            // 新舊名稱雙保險，讓 GAS 後端絕對抓得到
-            className: cls,
-            stuClass: cls,
-            studentNo: no,
-            stuNo: no,
-            studentName: name,
-            stuName: name,
-            studentEmail: email,
-            fileName: fileNameStr,
-            summaryText: summary,
-            pdfBase64: pdfBase64
-        };
+                className: cls,
+                stuClass: cls,
+                studentNo: no,
+                stuNo: no,
+                studentName: name,
+                stuName: name,
+                studentEmail: email,
+                fileName: fileNameStr,
+                summaryText: summary,
+                pdfBase64: pdfBase64
+            };
 
             fetch(gasUrl, {
                 method: "POST",
@@ -2048,6 +2086,7 @@ ${reflection}`;
             alert("PDF 產出失敗：" + (err.message || err));
         });
     }
+
 </script>
 
 </body>
