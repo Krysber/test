@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>115-1 九年級青少年健康體型計畫與熱量平衡計算器 V11.0</title>
+    <!-- 載入 html2pdf.js 庫供自動轉換 PDF 上傳 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2b6cb0;
+            --primary-dark: #2c5282;
+            --accent-color: #319795;
+            --warning-color: #dd6b20;
+            --danger-color: #e53e3e;
+            --success-color: #38a169;
+            --bg-light: #f7fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-dark: #2d3748;
+            --text-muted: #718096;
+            --nut-highlight: #d69e2e;
+        }
+
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        body { background-color: var(--bg-light); color: var(--text-dark); margin: 0; padding: 20px; line-height: 1.6; }
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            background: linear-gradient(135deg, #3182ce, #2b6cb0);
+            color: white;
+            padding: 22px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        header h1 { margin: 0 0 8px 0; font-size: 1.7rem; }
+        header p { margin: 0; opacity: 0.9; font-size: 0.95rem; }
+
+       /* 強制每一個區塊（大標題）都從新的一頁開始 */
+        .section-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 22px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            page-break-before: always; /* 確保每一個大標題都強制分頁 */
+            break-before: page;        /* 確保每一個大標題都強制分頁 */
+            page-break-inside: avoid;  
+            break-inside: avoid;
+        }
+
+        /* 讓第一個大標題（學生基本資料）不要強迫分頁，跟 header 連在第一頁即可 */
+        .container > .section-card:first-of-type {
+            page-break-before: auto;
+            break-before: auto;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            color: var(--primary-dark);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+            margin-top: 0;
+            margin-bottom: 18px;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.95rem;
+        }
+
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+        .badge-normal { background-color: #c6f6d5; color: #22543d; }
+        .badge-low { background-color: #feebc8; color: #742a2a; }
+        .badge-high { background-color: #fed7d7; color: #9b2c2c; }
+
+        .alert-box { padding: 12px 15px; border-radius: 8px; margin-top: 12px; font-size: 0.9rem; }
+        .alert-warning { background-color: #fffaf0; border-left: 4px solid var(--warning-color); color: #9c4221; }
+        .alert-danger { background-color: #fff5f5; border-left: 4px solid var(--danger-color); color: #9b2c2c; }
+        .alert-info { background-color: #ebf8ff; border-left: 4px solid #3182ce; color: #2b6cb0; }
+
+        .checkbox-group {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px;
+            background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);
+            max-height: 250px; overflow-y: auto;
+        }
+        .checkbox-item { display: flex; align-items: center; font-size: 0.85rem; cursor: pointer; }
+        .checkbox-item input { margin-right: 6px; width: auto; }
+
+        .type-tag { font-size: 0.72rem; padding: 2px 5px; border-radius: 3px; margin-left: 4px; color: white; }
+        .tag-aerobic { background-color: #319795; }
+        .tag-strength { background-color: #dd6b20; }
+        .tag-bone { background-color: #805ad5; }
+        .tag-flex { background-color: #d69e2e; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.88rem; }
+        th, td { border: 1px solid var(--border-color); padding: 8px; text-align: center; }
+        th { background-color: #edf2f7; color: var(--primary-dark); }
+
+        .btn {
+            background-color: var(--primary-color); color: white; border: none; padding: 10px 18px;
+            border-radius: 6px; font-size: 0.95rem; font-weight: bold; cursor: pointer; width: 100%;
+        }
+        .btn:hover { background-color: var(--primary-dark); }
+        .btn-copy { background-color: #805ad5; }
+        .btn-print { background-color: #38a169; }
+        .btn-preset { background-color: #4a5568; font-size: 0.82rem; padding: 6px 10px; margin-right: 5px; }
+        .btn-upload { background-color: #38a169; font-size: 1.1rem; padding: 14px; }
+        .btn-upload:disabled { background-color: #a0aec0; cursor: not-allowed; }
+
+        /* ⚡ 快速套用運動範本大按鈕樣式區塊 */
+        .preset-buttons-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 10px 0 18px 0;
+        }
+
+        .btn-preset-large {
+            background: linear-gradient(135deg, #3182ce, #2b6cb0);
+            color: white;
+            border: none;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-preset-large:hover {
+            background: linear-gradient(135deg, #2b6cb0, #2c5282);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+        }
+
+        .btn-preset-large:active {
+            transform: translateY(0);
+        }
+        
+
+        .food-card { background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }
+        .food-card.nut-special { border: 2px solid var(--nut-highlight); background: #fffff0; }
+        .food-card .emoji { font-size: 1.8rem; margin-bottom: 4px; }
+        .food-card h4 { margin: 0 0 4px 0; color: var(--primary-color); font-size: 0.95rem; }
+        .food-card.nut-special h4 { color: #b7791f; }
+        .food-card .portion { font-size: 1.1rem; font-weight: bold; color: #2d3748; }
+        .food-card .desc { font-size: 0.78rem; color: var(--text-muted); }
+
+        [aria-invalid="true"] { border: 2px solid #c53030 !important; background: #fff5f5; }
+        input:focus, select:focus, textarea:focus, button:focus-visible { outline: 3px solid #3182ce; outline-offset: 2px; }
+        
+        .meal-box {
+            background: #f8fafc; border: 1px solid #cbd5e0; border-radius: 8px; padding: 12px; margin-bottom: 12px;
+        }
+        .meal-title { font-weight: bold; color: var(--primary-dark); font-size: 1rem; margin-bottom: 8px; display: flex; align-items: center; }
+
+        .portion-hint { font-size: 0.75rem; margin-top: 3px; font-weight: bold; }
+        .hint-ok { color: #276749; }
+        .hint-warn { color: #b7791f; }
+
+        .formula-box {
+            background-color: #2d3748; color: #f7fafc; padding: 15px; border-radius: 8px;
+            font-family: monospace; margin: 15px 0; font-size: 0.9rem;
+        }
+
+        .custom-sport-box {
+            background: #edf2f7; padding: 8px 10px; border-radius: 6px; margin-top: 6px; display: none;
+        }
+
+        .progress-bar-bg {
+            background-color: #e2e8f0; border-radius: 10px; height: 16px; width: 100%; margin-top: 8px; overflow: hidden; position: relative;
+        }
+        .progress-bar-fill {
+            height: 100%; width: 50%; background: linear-gradient(90deg, #38a169, #319795); transition: width 0.4s ease;
+        }
+
+        #upload-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; color: white; flex-direction: column;
+        }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #3182ce; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media print {
+            body { 
+                background-color: #ffffff !important; 
+                -webkit-print-color-adjust: exact;   
+                print-color-adjust: exact;
+            }
+            .section-card { 
+                box-shadow: none !important; 
+                border: 1px solid #cbd5e0 !important; 
+                padding: 12px !important; 
+                margin-bottom: 12px !important; 
+                background-color: #ffffff !important;
+            }
+            .btn, .no-print, #upload-overlay { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 上傳等待動畫遮罩 -->
+<div id="upload-overlay">
+    <div class="spinner"></div>
+    <div id="upload-status-text" style="font-size: 1.2rem; font-weight: bold;">正在打包 PDF 並傳送至老師雲端...</div>
+</div>
+
+<div class="container" id="pdf-content">
+    <header>
+        <h1>115-1 九年級青少年健康體型計畫與熱量平衡計算器</h1>
+        <p>該網站僅供健康教育課程所使用和日常所需參考，如有專業的需求請另尋專業醫療人員協助。 設計者/ＯＯＯ</p>
+    </header>
+
+        <!-- 0. 學生基本資料 -->
+    <div class="section-card">
+        <h2 class="section-title">🏫 學生學習單基本資料</h2>
+        <div class="grid-3" style="margin-bottom: 12px;">
+            <div class="form-group"><label for="stu-class">班級</label><input type="text" id="stu-class" placeholder="例: 901" oninput="saveLocalStorage()"></div>
+            <div class="form-group"><label for="stu-no">座號</label><input type="number" id="stu-no" placeholder="例: 05" oninput="saveLocalStorage()"></div>
+            <div class="form-group"><label for="stu-name">姓名</label><input type="text" id="stu-name" placeholder="請輸入姓名" oninput="saveLocalStorage()"></div>
+        </div>
+        <div class="grid-2">
+            <div class="form-group"><label for="stu-email">學生電子郵件 (Email，用於接收個人複製本 PDF)</label><input type="email" id="stu-email" placeholder="例: student@std.mail.ntpc.edu.tw" oninput="saveLocalStorage()"></div>
+            <div class="form-group"><label for="stu-date">填寫日期</label><input type="date" id="stu-date" onchange="saveLocalStorage()"></div>
+        </div>
+    </div>
+
+    <!-- 一、 基本資料與需求評估 -->
+    <div class="section-card">
+        <h2 class="section-title">一、 我的基本資料與需求評估</h2>
+        <div id="input-validation" class="alert-box alert-danger" style="display:none; margin-bottom:12px;" role="alert" aria-live="polite"></div>
+        <p style="font-size:.85rem;color:var(--text-muted);">BMI 依「兒童及青少年生長身體質量指數（BMI）建議值」表，按生理性別與年齡（每 0.5 歲）對照；結果僅供健康教育參考，不代表診斷。</p>
+        <div class="grid-3">
+            <div class="form-group"><label for="gender">生理性別</label><select id="gender" onchange="calculateAll()"><option value="male">男</option><option value="female" selected>女</option></select></div>
+            <div class="form-group"><label for="age">年齡 (歲)</label><input type="number" id="age" value="15" min="12" max="17.5" step="0.5" onchange="calculateAll()"></div>
+            <div class="form-group"><label for="height">身高 (cm)</label><input type="number" id="height" value="155" oninput="calculateAll()"></div>
+            <div class="form-group"><label for="weight">體重 (kg)</label><input type="number" id="weight" value="35" oninput="syncWeightAndCalc()"></div>
+            <div class="form-group"><label for="waist">腰圍 (cm)</label><input type="number" id="waist" value="60" oninput="calculateAll()"></div>
+            <div class="form-group"><label for="hip">臀圍 (cm)</label><input type="number" id="hip" value="78" oninput="calculateAll()"></div>
+            <div class="form-group"><label for="neck">脖圍 (cm, 選填)</label><input type="number" id="neck" value="30" oninput="calculateAll()"></div>
+            <div class="form-group"><label for="bodyfat">體脂率 (%, 可跳過)</label><input type="number" id="bodyfat" placeholder="例: 18" oninput="calculateAll()"></div>
+            <div class="form-group">
+                <label for="pal-level">日常活動等級 (NEAT 步數對照表)</label>
+                <select id="pal-level" onchange="calculateAll()">
+                    <option value="light">輕度活動 (久坐為主 / 步數 < 4,000 步)</option>
+                    <option value="moderate" selected>中度活動 (一般上學走動 / 步數 6,000 ~ 8,000 步)</option>
+                    <option value="heavy">重度活動 (頻繁站立搬重 / 步數 > 10,000 步)</option>
+                </select>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>項目</th>
+                    <th>BMI</th>
+                    <th>腰臀比 (WHR)</th>
+                    <th>腰高比 (WHtR)</th>
+                    <th>基礎代謝 (BMR)</th>
+                    <th>日常活動消耗 (NEAT)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>測量數值</strong></td>
+                    <td id="res-bmi">14.6</td>
+                    <td id="res-whr">0.77</td>
+                    <td id="res-whtr">0.39</td>
+                    <td id="res-bmr">1200 kcal</td>
+                    <td id="res-neat">200 kcal</td>
+                </tr>
+                <tr>
+                    <td><strong>評估結果</strong></td>
+                    <td id="eval-bmi"><span class="badge badge-low">體重過輕</span></td>
+                    <td id="eval-whr"><span class="badge badge-normal">符合標準</span></td>
+                    <td id="eval-whtr"><span class="badge badge-normal">符合標準 (＜0.5)</span></td>
+                    <td id="eval-bmr-type">Schofield (認列底線 1200)</td>
+                    <td>官方日常消耗表格對照</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="bmr-warning" class="alert-box alert-warning" style="display: none; margin-top: 12px;"></div>
+
+        <div id="body-type-advice" class="alert-box alert-info" style="display: block; margin-top: 12px;">
+            🔍 <strong>身體狀況特徵評估：</strong> 正在計算您的身體指數與建議...
+        </div>
+        <div class="alert-box" style="margin-top:10px;font-size:.85rem;line-height:1.65;">
+            <strong>📘 指標標準說明（供健康教育參考）</strong><br>
+            <strong>BMI：</strong>依本頁採用的「兒童及青少年生長身體質量指數（BMI）建議值」PDF，依生理性別及年齡（每 0.5 歲）對照過輕、過重與肥胖切點。<br>
+            <strong>腰臀比（WHR）：</strong>腰圍 ÷ 臀圍。依國中健康教育審定課本採用的課堂參考參數：男生 < 0.92、女生 < 0.88。<br>
+            <strong>腰高比（WHtR）：</strong>腰圍 ÷ 身高；0.4～未滿 0.5 為常見健康參考區間。
+        </div>
+    </div>
+
+    <!-- 二、短期健康計畫與熱量換算 -->
+    <div class="section-card">
+        <h2 class="section-title">二、我的短期健康計畫（3 週至 3 個月）</h2>
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="goal">計畫健康目標</label>
+                <select id="goal" onchange="updateKgOptions(); calculateAll();">
+                    <option value="gain_weight" selected>增加體重（以健康行為為主）</option>
+                    <option value="gain_muscle">增進肌力與肌肉發展</option>
+                    <option value="maintain">維持健康與規律生活</option>
+                    <option value="lose_weight">改善生活習慣（不以減重為必達標）</option>
+                    <option value="lose_fat">提升體能與健康飲食</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="kg-target">選擇觀察用的體重變化（可選）</label>
+                <select id="kg-target" onchange="calculateAll()"></select>
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top:10px"><label for="plan-duration">計畫時間長度</label><select id="plan-duration" onchange="calculateAll()"><option value="21" selected>3 週（21 天）</option><option value="28">4 週（28 天）</option><option value="42">6 週（42 天）</option><option value="56">8 週（56 天）</option><option value="63">9 週（63 天）</option><option value="84">12 週（84 天）</option><option value="90">3 個月（90 天）</option></select></div>
+        <div id="goal-warning" class="alert-box alert-warning" style="display:none;" aria-live="polite">計畫以規律飲食、活動與睡眠等健康行為為主；青少年不建議自行進行嚴格減重或節食。</div>
+
+        <div style="background: #edf2f7; padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 0.9rem;">
+            📊 <strong><span id="duration-label">21</span> 天簡化熱量換算（教學估算）：</strong><br>
+            目標體重變化：<span id="target-kg-desc" style="font-weight: bold; color: var(--primary-color);">+1.0 kg</span> | 
+            計畫期間總熱量調整：<span id="target-total-cal" style="font-weight: bold; color: var(--primary-color);">+7700 kcal</span> | 
+            <strong>每日目標卡路里調整算術值：<span id="daily-target-cal" style="font-weight: bold; color: #d69e2e;">+367 kcal/日</span></strong>
+        </div>
+    </div>
+
+    <!-- 三、 現況分析 -->
+    <div class="section-card">
+        <h2 class="section-title">三、 現況分析 (請如實填寫)</h2>
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="over-food">每日攝取過多的六大類食物</label>
+                <input type="text" id="over-food" placeholder="例如：全穀雜糧類（白飯過多）、油脂類（炸物）" oninput="saveLocalStorage()">
+            </div>
+            <div class="form-group">
+                <label for="under-food">每日攝取過少的六大類食物</label>
+                <input type="text" id="under-food" placeholder="例如：蔬菜類、乳品類（沒喝牛奶）" oninput="saveLocalStorage()">
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 10px;">
+            <label>現況運動種類勾選（請勾選您平時常做的運動，可多選）：</label>
+            <div class="checkbox-group">
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-basketball" value="籃球" onchange="saveLocalStorage()">籃球 <span class="type-tag tag-aerobic">有氧</span><span class="type-tag tag-bone">骨骼</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-volleyball" value="排球" onchange="saveLocalStorage()">排球 <span class="type-tag tag-aerobic">有氧</span><span class="type-tag tag-bone">骨骼</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-soccer" value="足球/手球/躲避球" onchange="saveLocalStorage()">足球/手球/躲避球 <span class="type-tag tag-aerobic">有氧</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-badminton" value="羽毛球/桌球/網球" onchange="saveLocalStorage()">羽球/桌球/網球 <span class="type-tag tag-aerobic">有氧</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-jogging" value="慢跑/快走/YouBike" onchange="saveLocalStorage()">慢跑/快走/自行車 <span class="type-tag tag-aerobic">有氧</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-swimming" value="游泳/水上運動" onchange="saveLocalStorage()">游泳/水上運動 <span class="type-tag tag-aerobic">有氧</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-skating" value="直排輪/滑板/蛇板" onchange="saveLocalStorage()">直排輪/滑板/蛇板 <span class="type-tag tag-aerobic">有氧</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-dance" value="街舞/Kpop/Zumba" onchange="saveLocalStorage()">街舞/K-pop舞蹈 <span class="type-tag tag-aerobic">有氧</span><span class="type-tag tag-flex">柔軟度</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-chase" value="鬼抓人/飛盤/漆彈" onchange="saveLocalStorage()">鬼抓人/飛盤遊戲 <span class="type-tag tag-aerobic">有氧</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-pushup" value="伏地挺身/深蹲/弓步蹲" onchange="saveLocalStorage()">伏地挺身/深蹲 <span class="type-tag tag-strength">肌力</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-plank" value="棒式/仰臥起坐/登山者" onchange="saveLocalStorage()">棒式/仰臥起坐/登山者 <span class="type-tag tag-strength">肌力</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-burpee" value="波比跳/高抬腿" onchange="saveLocalStorage()">波比跳/高抬腿 <span class="type-tag tag-strength">肌力</span><span class="type-tag tag-bone">骨骼</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-pullup" value="引體向上/單槓" onchange="saveLocalStorage()">引體向上/單槓懸吊 <span class="type-tag tag-strength">肌力</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-dumbbell" value="彈力帶/啞鈴訓練" onchange="saveLocalStorage()">彈力帶/啞鈴訓練 <span class="type-tag tag-strength">肌力</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-climb" value="攀岩/抱石" onchange="saveLocalStorage()">攀岩/抱石 <span class="type-tag tag-strength">肌力</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-rope" value="跳繩(單人/雙人/花式)" onchange="saveLocalStorage()">跳繩 <span class="type-tag tag-bone">骨骼</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-trampoline" value="彈跳床/跳格子" onchange="saveLocalStorage()">彈跳床/跳格子 <span class="type-tag tag-bone">骨骼</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-jump" value="田徑跳高/跳遠" onchange="saveLocalStorage()">田徑跳高/跳遠 <span class="type-tag tag-bone">骨骼</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-stretch" value="坐姿體前彎/靜態伸展" onchange="saveLocalStorage()">坐姿體前彎/伸展 <span class="type-tag tag-flex">柔軟度</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-yoga" value="瑜伽/皮拉提斯" onchange="saveLocalStorage()">瑜伽/皮拉提斯 <span class="type-tag tag-flex">柔軟度</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-ballet" value="芭蕾/現代舞/啦啦隊" onchange="saveLocalStorage()">芭蕾/現代舞/啦啦隊 <span class="type-tag tag-flex">柔軟度</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-taekwondo" value="跆拳道/空手道/防身術" onchange="saveLocalStorage()">跆拳道/武術/防身術 <span class="type-tag tag-bone">骨骼</span><span class="type-tag tag-flex">柔軟度</span></label>
+                <label class="checkbox-item"><input type="checkbox" class="curr-sports" id="cs-foamroller" value="滾筒/按摩球筋膜放鬆" onchange="saveLocalStorage()">滾筒/筋膜放鬆 <span class="type-tag tag-flex">柔軟度</span></label>
+            </div>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <label for="curr-sports-other">其他現況運動補充 (填寫項目名稱)：</label>
+                <input type="text" id="curr-sports-other" placeholder="例如：民俗體育、扯鈴、衝浪、SUP、美式足球等..." oninput="saveLocalStorage()">
+            </div>
+        </div>
+    </div>
+
+    <!-- 四、 青春期一日飲食建議量與三餐安排 -->
+    <div class="section-card">
+        <h2 class="section-title">四、 我的每日六大類食物目標份量 (衛福部青少年營養手冊對接)</h2>
+        
+        <div class="grid-2" style="background: #ebf8ff; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <div>
+                <label style="font-weight: bold; color: #2b6cb0;">青少年建議飲食級距：</label>
+                <div id="diet-tier-name" style="font-size: 1.1rem; font-weight: bold; color: var(--primary-dark);">女 (稍低) 2050 kcal 級距</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted);">
+                    營養師認證標準份量彈性區間：<span id="diet-range" style="font-weight: bold;">1435 ~ 2050 kcal</span>
+                </div>
+            </div>
+            <div>
+                <label style="font-weight: bold; color: #2b6cb0;">連動調整後之每日飲食卡路里：</label>
+                <input type="number" id="custom-diet-cal" onchange="manualDietCalChange()" style="font-size: 1.1rem; font-weight: bold; color: var(--primary-color);">
+                <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 3px;">
+                    💡 系統自動根據 [目標 = 飲食 - (BMR + NEAT + EAT)] 調節，維持在安全彈性區間內！
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-3" style="margin-bottom: 20px;">
+            <div class="food-card">
+                <div class="emoji">🥣</div>
+                <h4>全穀雜糧類</h4>
+                <div class="portion" id="portion-grain">-- 碗</div>
+                <div class="desc" id="portion-grain-detail">(未精製 -- 碗 + 其他 -- 碗)</div>
+            </div>
+            <div class="food-card">
+                <div class="emoji">🥩</div>
+                <h4>豆魚蛋肉類</h4>
+                <div class="portion" id="portion-protein">-- 份</div>
+                <div class="desc">(75卡/份)</div>
+            </div>
+            <div class="food-card">
+                <div class="emoji">🥛</div>
+                <h4>乳品類 (骨骼發育)</h4>
+                <div class="portion" id="portion-dairy">1.5 - 2 杯</div>
+                <div class="desc">(衛福部國健署青少年每日必備)</div>
+            </div>
+            <div class="food-card">
+                <div class="emoji">🥦</div>
+                <h4>蔬菜類</h4>
+                <div class="portion" id="portion-veg">-- 份</div>
+                <div class="desc">(25卡/份)</div>
+            </div>
+            <div class="food-card">
+                <div class="emoji">🍎</div>
+                <h4>水果類</h4>
+                <div class="portion" id="portion-fruit">-- 份</div>
+                <div class="desc">(60卡/份)</div>
+            </div>
+            <div class="food-card nut-special">
+                <div class="emoji">🥑</div>
+                <h4 style="color:#b7791f">油脂與堅果種子類</h4>
+                <div class="portion" id="portion-oil-nut">-- 份</div>
+                <div class="desc" id="portion-oil-nut-detail" style="color:#744210; font-weight:bold;">(烹調油脂 -- 份 + 堅果 1 份)</div>
+            </div>
+        </div>
+
+        <!-- 四-2. 三餐與點心六大類食物具體菜單規劃 -->
+        <h3 style="color: var(--primary-dark); border-top: 1px dashed var(--border-color); padding-top: 15px; margin-top: 10px;">
+            🍱 四-2. 我的每日三餐與點心六大類食物組合規劃（完整六大類呈現）
+        </h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 12px;">
+            請分別選擇「食物種類」與「食用份量」。選擇份量時，選單下方會出現即時動態提醒，幫助您掌握青春期衛福部建議量！
+        </p>
+
+        <!-- 早餐 -->
+        <div class="meal-box">
+            <div class="meal-title">🍳 活力早餐 (完整六大類搭配)</div>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>🥣 全穀雜糧食物：</label>
+                    <select class="meal-select" id="bf-g" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="全麥吐司" selected>全麥吐司 (未精製)</option>
+                        <option value="燕麥片">燕麥片 (未精製)</option>
+                        <option value="蒸地瓜/烤地瓜">蒸地瓜/烤地瓜 (未精製)</option>
+                        <option value="蒸南瓜/芋頭">蒸南瓜/芋頭 (未精製)</option>
+                        <option value="傳統飯糰">傳統飯糰</option>
+                        <option value="蘿蔔膏">蘿蔔膏</option>
+                        <option value="蛋餅皮/蔥抓餅">蛋餅皮/蔥抓餅</option>
+                        <option value="全麥饅頭/鮮奶饅頭">全麥饅頭/鮮奶饅頭</option>
+                        <option value="無糖穀物麥片">無糖穀物麥片</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="bf-g-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="bf-g-p" onchange="checkPortionHint(this, 'grain', 0.8, 1.2); onMealChange();">
+                        <option value="0" selected>0 碗</option>
+                        <option value="0.5">0.5 碗</option>
+                        <option value="1">1 碗</option>
+                        <option value="1.5">1.5 碗</option>
+                        <option value="2">2 碗</option>
+                        <option value="2.5">2.5 碗</option>
+                        <option value="3">3 碗</option>
+                    </select>
+                    <div class="portion-hint" id="bf-g-hint"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>🥩 豆魚蛋肉食物：</label>
+                    <select class="meal-select" id="bf-p" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="水煮蛋/茶葉蛋" selected>水煮蛋 / 茶葉蛋</option>
+                        <option value="荷包蛋/煎蛋">荷包蛋 / 煎蛋</option>
+                        <option value="無糖豆漿/黑豆漿">無糖豆漿 / 黑豆漿</option>
+                        <option value="嫩雞胸肉/里肌肉片">嫩雞胸肉 / 里肌肉片</option>
+                        <option value="煎豬肉排/漢堡排">煎豬肉排 / 漢堡排</option>
+                        <option value="水蒸水煮鮪魚">水蒸水煮鮪魚</option>
+                        <option value="毛豆/豆腐">毛豆 / 豆腐</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="bf-p-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="bf-p-p" onchange="checkPortionHint(this, 'protein', 1, 2); onMealChange();">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                        <option value="5">5 份</option>
+                    </select>
+                    <div class="portion-hint" id="bf-p-hint"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>🥛 乳品食物 (骨骼成長)：</label>
+                    <select class="meal-select" id="bf-d" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="低脂鮮奶" selected>低脂鮮奶 (240ml)</option>
+                        <option value="全脂鮮奶">全脂鮮奶 (240ml)</option>
+                        <option value="無糖優酪乳">無糖優酪乳</option>
+                        <option value="起司片">起司片</option>
+                        <option value="無糖優格">無糖優格</option>
+                        <option value="高鈣保久乳">高鈣保久乳</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="bf-d-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="bf-d-p" onchange="checkPortionHint(this, 'dairy', 1, 1); onMealChange();">
+                        <option value="0" selected>0 杯</option>
+                        <option value="0.5">0.5 杯</option>
+                        <option value="1">1 杯</option>
+                        <option value="1.5">1.5 杯</option>
+                        <option value="2">2 杯</option>
+                        <option value="2.5">2.5 杯</option>
+                        <option value="3">3 杯</option>
+                    </select>
+                    <div class="portion-hint" id="bf-d-hint"></div>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>🥦 蔬菜食物：</label>
+                    <select class="meal-select" id="bf-v" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="無" selected>無</option>
+                        <option value="美式生菜/沙拉">美式生菜 / 沙拉</option>
+                        <option value="牛番茄切片">牛番茄切片</option>
+                        <option value="小黃瓜切片">小黃瓜切片</option>
+                        <option value="熟燙蔬菜">熟燙蔬菜</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="bf-v-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="bf-v-p" onchange="onMealChange()">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>🍎 水果食物：</label>
+                    <select class="meal-select" id="bf-f" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="蘋果" selected>蘋果 (拳頭大)</option>
+                        <option value="香蕉">香蕉</option>
+                        <option value="芭樂">芭樂</option>
+                        <option value="奇異果">奇異果</option>
+                        <option value="無">無</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="bf-f-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="bf-f-p" onchange="onMealChange()">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="background:#fffaf0; border:1px dashed var(--nut-highlight); padding:6px; border-radius:6px;">
+                    <label style="color:#b7791f">🥑 油脂與堅果食物：</label>
+                    <select class="meal-select" id="bf-n" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="無調味綜合堅果" selected>⭐ 無調味綜合堅果 (必選堅果)</option>
+                        <option value="黑芝麻粉">黑芝麻粉 (堅果)</option>
+                        <option value="無糖花生醬">無糖花生醬 (堅果)</option>
+                        <option value="烹調植物油">煎蛋烹調植物油 (油脂)</option>
+                        <option value="無">無</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="bf-n-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="bf-n-p" onchange="onMealChange()">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                        <option value="5">5 份</option>
+                        <option value="6">6 份</option>
+                        <option value="7">7 份</option>
+                        <option value="8">8 份</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 午餐 -->
+        <div class="meal-box">
+            <div class="meal-title">🍱 營養午餐 / 便當 (完整六大類搭配)</div>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>🥣 全穀雜糧食物：</label>
+                    <select class="meal-select" id="lu-g" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="糙米飯" selected>糙米飯 (未精製)</option>
+                        <option value="紫米飯/五穀飯">紫米飯 / 五穀飯 (未精製)</option>
+                        <option value="胚芽米飯">胚芽米飯 (未精製)</option>
+                        <option value="白米飯">白米飯</option>
+                        <option value="蒸南瓜/烤地瓜">蒸南瓜 / 烤地瓜 (未精製)</option>
+                        <option value="湯麵/乾麵">湯麵 / 乾麵</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="lu-g-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="lu-g-p" onchange="checkPortionHint(this, 'grain', 1, 1.5); onMealChange();">
+                        <option value="0" selected>0 碗</option>
+                        <option value="0.5">0.5 碗</option>
+                        <option value="1">1 碗</option>
+                        <option value="1.5">1.5 碗</option>
+                        <option value="2">2 碗</option>
+                        <option value="2.5">2.5 碗</option>
+                        <option value="3">3 碗</option>
+                    </select>
+                    <div class="portion-hint" id="lu-g-hint"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>🥩 豆魚蛋肉食物：</label>
+                    <select class="meal-select" id="lu-p" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="滷雞腿(去皮)" selected>滷雞腿 (去皮)</option>
+                        <option value="烤鯖魚/清蒸鱸魚">烤鯖魚 / 清蒸鱸魚</option>
+                        <option value="香煎豆腐/豆腐排">香煎豆腐 / 豆腐排</option>
+                        <option value="燉牛肉/瘦豬肉片">燉牛肉 / 瘦豬肉片</option>
+                        <option value="滷蛋/蒸蛋">滷蛋 / 蒸蛋</option>
+                        <option value="涼拌毛豆">涼拌毛豆 (植物蛋白)</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="lu-p-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="lu-p-p" onchange="checkPortionHint(this, 'protein', 2, 3); onMealChange();">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                        <option value="5">5 份</option>
+                    </select>
+                    <div class="portion-hint" id="lu-p-hint"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>🥛 乳品食物：</label>
+                    <select class="meal-select" id="lu-d" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="無" selected>無</option>
+                        <option value="學校保久乳">學校保久乳 (1盒)</option>
+                        <option value="低脂鮮奶">低脂鮮奶</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="lu-d-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="lu-d-p" onchange="onMealChange()">
+                        <option value="0" selected>0 杯</option>
+                        <option value="0.5">0.5 杯</option>
+                        <option value="1">1 杯</option>
+                        <option value="1.5">1.5 杯</option>
+                        <option value="2">2 杯</option>
+                        <option value="2.5">2.5 杯</option>
+                        <option value="3">3 杯</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>🥦 蔬菜食物：</label>
+                    <select class="meal-select" id="lu-v" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="炒高麗菜/空心菜" selected>炒高麗菜 / 空心菜</option>
+                        <option value="深綠色蔬菜(地瓜葉/菠菜)">深綠色蔬菜 (地瓜葉/菠菜)</option>
+                        <option value="綠花椰菜/彩椒">綠花椰菜 / 彩椒</option>
+                        <option value="綜合炒菇/木耳">綜合炒菇 / 木耳</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="lu-v-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="lu-v-p" onchange="checkPortionHint(this, 'veg', 1, 2); onMealChange();">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                    </select>
+                    <div class="portion-hint" id="lu-v-hint"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>🍎 水果食物：</label>
+                    <select class="meal-select" id="lu-f" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="芭樂" selected>芭樂</option>
+                        <option value="奇異果">奇異果</option>
+                        <option value="柳丁/柑橘">柳丁 / 柑橘</option>
+                        <option value="小番茄">小番茄 (10顆)</option>
+                        <option value="無">無</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="lu-f-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="lu-f-p" onchange="onMealChange()">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="background:#fffaf0; border:1px dashed var(--nut-highlight); padding:6px; border-radius:6px;">
+                    <label style="color:#b7791f">🥑 油脂與堅果食物：</label>
+                    <select class="meal-select" id="lu-n" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="烹調植物油" selected>正餐烹調植物油 (油脂)</option>
+                        <option value="堅果隨身包">堅果隨身包 (堅果)</option>
+                        <option value="無">無</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="lu-n-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="lu-n-p" onchange="onMealChange()">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                        <option value="5">5 份</option>
+                        <option value="6">6 份</option>
+                        <option value="7">7 份</option>
+                        <option value="8">8 份</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 晚餐 -->
+        <div class="meal-box">
+            <div class="meal-title">🍽️ 均衡晚餐 (完整六大類搭配)</div>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>🥣 全穀雜糧食物：</label>
+                    <select class="meal-select" id="dn-g" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="雜糧飯/燕麥飯" selected>雜糧飯 / 燕麥飯 (未精製)</option>
+                        <option value="蒸馬鈴薯/蒸玉米">蒸馬鈴薯 / 蒸玉米 (未精製)</option>
+                        <option value="全麥水餃">全麥水餃</option>
+                        <option value="白米飯">白米飯 (控管份量)</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="dn-g-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="dn-g-p" onchange="checkPortionHint(this, 'grain', 0.8, 1); onMealChange();">
+                        <option value="0" selected>0 碗</option>
+                        <option value="0.5">0.5 碗</option>
+                        <option value="1">1 碗</option>
+                        <option value="1.5">1.5 碗</option>
+                        <option value="2">2 碗</option>
+                        <option value="2.5">2.5 碗</option>
+                        <option value="3">3 碗</option>
+                    </select>
+                    <div class="portion-hint" id="dn-g-hint"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>🥩 豆魚蛋肉食物：</label>
+                    <select class="meal-select" id="dn-p" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="清蒸魚片/烤鮭魚" selected>清蒸魚片 / 烤鮭魚</option>
+                        <option value="清燉排骨/瘦肉片">清燉排骨 / 瘦肉片</option>
+                        <option value="香煎豆腐/炒毛豆">香煎豆腐 / 炒毛豆</option>
+                        <option value="香煎蝦仁/蒸蛋">香煎蝦仁 / 蒸蛋</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="dn-p-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="dn-p-p" onchange="checkPortionHint(this, 'protein', 2, 2.5); onMealChange();">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                        <option value="5">5 份</option>
+                    </select>
+                    <div class="portion-hint" id="dn-p-hint"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>🥛 乳品食物：</label>
+                    <select class="meal-select" id="dn-d" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="低脂鮮奶" selected>低脂鮮奶 (240ml)</option>
+                        <option value="無糖優格">無糖優格</option>
+                        <option value="無">無</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="dn-d-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="dn-d-p" onchange="onMealChange()">
+                        <option value="0" selected>0 杯</option>
+                        <option value="0.5">0.5 杯</option>
+                        <option value="1">1 杯</option>
+                        <option value="1.5">1.5 杯</option>
+                        <option value="2">2 杯</option>
+                        <option value="2.5">2.5 杯</option>
+                        <option value="3">3 杯</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>🥦 蔬菜食物：</label>
+                    <select class="meal-select" id="dn-v" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="炒菠菜/地瓜葉" selected>炒菠菜 / 地瓜葉</option>
+                        <option value="炒絲瓜/冬瓜/黃瓜">炒絲瓜 / 冬瓜 / 黃瓜</option>
+                        <option value="綠花椰菜/彩椒">綠花椰菜 / 彩椒</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="dn-v-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="dn-v-p" onchange="checkPortionHint(this, 'veg', 1, 1.5); onMealChange();">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                    </select>
+                    <div class="portion-hint" id="dn-v-hint"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>🍎 水果食物：</label>
+                    <select class="meal-select" id="dn-f" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="橘子/柳丁" selected>橘子 / 柳丁</option>
+                        <option value="小番茄">小番茄 (10顆)</option>
+                        <option value="切塊木瓜/哈密瓜">切塊木瓜 / 哈密瓜 (1碗)</option>
+                        <option value="無">無</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="dn-f-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="dn-f-p" onchange="onMealChange()">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="background:#fffaf0; border:1px dashed var(--nut-highlight); padding:6px; border-radius:6px;">
+                    <label style="color:#b7791f">🥑 油脂與堅果食物：</label>
+                    <select class="meal-select" id="dn-n" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="烹調植物油" selected>正餐烹調植物油 (油脂)</option>
+                        <option value="無調味堅果">無調味堅果 (堅果)</option>
+                        <option value="橄欖油涼拌">橄欖油涼拌 (油脂)</option>
+                        <option value="無">無</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="dn-n-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="dn-n-p" onchange="onMealChange()">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                        <option value="5">5 份</option>
+                        <option value="6">6 份</option>
+                        <option value="7">7 份</option>
+                        <option value="8">8 份</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 點心 / 運動後補充 -->
+        <div class="meal-box">
+            <div class="meal-title">🥛 點心 / 運動後補充 (補足發育與肌肉修復)</div>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>🥣 全穀雜糧食物：</label>
+                    <select class="meal-select" id="sn-g" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="無" selected>無</option>
+                        <option value="蒸地瓜(小條)">蒸地瓜 (1小條)</option>
+                        <option value="全麥小餐包">全麥小餐包 (1個)</option>
+                        <option value="燕麥餅乾">燕麥餅乾 (2片)</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="sn-g-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="sn-g-p" onchange="onMealChange()">
+                        <option value="0" selected>0 碗</option>
+                        <option value="0.5">0.5 碗</option>
+                        <option value="1">1 碗</option>
+                        <option value="1.5">1.5 碗</option>
+                        <option value="2">2 碗</option>
+                        <option value="2.5">2.5 碗</option>
+                        <option value="3">3 碗</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>🥩 豆魚蛋肉食物：</label>
+                    <select class="meal-select" id="sn-p" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="茶葉蛋/水煮蛋">茶葉蛋 / 水煮蛋 (1顆)</option>
+                        <option value="無糖豆漿">無糖豆漿 (1杯)</option>
+                        <option value="無" selected>無</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="sn-p-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="sn-p-p" onchange="onMealChange()">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                        <option value="5">5 份</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>🥛 乳品食物：</label>
+                    <select class="meal-select" id="sn-d" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="高鈣低脂奶">高鈣低脂奶 (1杯)</option>
+                        <option value="無糖優格">無糖優格</option>
+                        <option value="無" selected>無</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="sn-d-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="sn-d-p" onchange="onMealChange()">
+                        <option value="0" selected>0 杯</option>
+                        <option value="0.5">0.5 杯</option>
+                        <option value="1">1 杯</option>
+                        <option value="1.5">1.5 杯</option>
+                        <option value="2">2 杯</option>
+                        <option value="2.5">2.5 杯</option>
+                        <option value="3">3 杯</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>🥦 蔬菜食物：</label>
+                    <select class="meal-select" id="sn-v" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="無" selected>無</option>
+                        <option value="小黃瓜棒/胡蘿蔔條">小黃瓜棒 / 胡蘿蔔條</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="sn-v-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="sn-v-p" onchange="onMealChange()">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>🍎 水果食物：</label>
+                    <select class="meal-select" id="sn-f" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="香蕉">香蕉 (1根)</option>
+                        <option value="蘋果">蘋果 (1顆)</option>
+                        <option value="無" selected>無</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="sn-f-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="sn-f-p" onchange="onMealChange()">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="background:#fffaf0; border:1px dashed var(--nut-highlight); padding:6px; border-radius:6px;">
+                    <label style="color:#b7791f">🥑 油脂與堅果食物：</label>
+                    <select class="meal-select" id="sn-n" onchange="toggleCustomFood(this); onMealChange();">
+                        <option value="綜合堅果" selected>綜合堅果 (1小包)</option>
+                        <option value="無調味杏仁果">無調味杏仁果 (10顆)</option>
+                        <option value="無">無</option>
+                        <option value="custom">✨ 其他 (自訂食物)</option>
+                    </select>
+                    <input type="text" class="custom-food-input" id="sn-n-custom" placeholder="請輸入食物名稱" style="display:none; margin-top:4px;" oninput="onMealChange()">
+                    <label style="margin-top:6px; font-weight:normal; font-size:0.85rem;">設定份量：</label>
+                    <select class="portion-select" id="sn-n-p" onchange="onMealChange()">
+                        <option value="0" selected>0 份</option>
+                        <option value="0.5">0.5 份</option>
+                        <option value="1">1 份</option>
+                        <option value="1.5">1.5 份</option>
+                        <option value="2">2 份</option>
+                        <option value="2.5">2.5 份</option>
+                        <option value="3">3 份</option>
+                        <option value="4">4 份</option>
+                        <option value="5">5 份</option>
+                        <option value="6">6 份</option>
+                        <option value="7">7 份</option>
+                        <option value="8">8 份</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="meal-box" style="margin-top:12px;">
+            <h3 style="margin-top:0">📊 菜單規劃與每日六大類建議對照（動態連動）</h3>
+            <div style="overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch">
+                <table id="meal-compare-table" style="min-width:620px;width:100%">
+                    <thead>
+                        <tr>
+                            <th>食物類別</th>
+                            <th>目前菜單規劃組合</th>
+                            <th>衛福部每日建議標準</th>
+                            <th>狀態與提醒</th>
+                        </tr>
+                    </thead>
+                    <tbody id="meal-compare-body">
+                        <tr><td colspan="4">載入中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 五、 運動計算規劃區與 EAT 熱量平衡對接 -->
+    <div class="section-card">
+        <h2 class="section-title">五、 運動規劃與 EAT 熱量平衡對接</h2>
+        
+       <div style="margin-bottom: 12px;" class="no-print">
+        <span style="font-size: 0.9rem; font-weight: bold; color: var(--primary-dark); display: block; margin-bottom: 8px;">⚡ 快速套用運動範本：</span>
+        <div class="preset-buttons-container">
+            <button class="btn-preset-large" onclick="applyPreset('team')">🏀 校園球隊型</button>
+            <button class="btn-preset-large" onclick="applyPreset('commute')" style="background: linear-gradient(135deg, #319795, #285e61);">🏃 日常通勤好動型</button>
+            <button class="btn-preset-large" onclick="applyPreset('home')" style="background: linear-gradient(135deg, #805ad5, #553c9a);">🧘 居家循序修復型</button>
+        </div>
+    </div>
+
+        <!-- 熱量平衡算式公式與動態呼應 -->
+        <div class="formula-box">
+            📐 <strong>熱量平衡算式：</strong><br>
+            目標卡路里 (<span id="f-target" style="color:#f6ad55; font-weight:bold;">0</span>) = 每日飲食卡路里 (<span id="f-diet" style="color:#68d391; font-weight:bold;">0</span>) - [ 基礎代謝 BMR (<span id="f-bmr">0</span>) + 日常 NEAT (<span id="f-neat">0</span>) + 每日運動 EAT (<span id="f-sport" style="color:#63b3ed; font-weight:bold;">0</span>) ]
+            
+            <div class="progress-bar-bg" title="發育健康狀態指標">
+                <div id="progress-bar-fill" class="progress-bar-fill"></div>
+            </div>
+            <div style="font-size:0.75rem; text-align:right; margin-top:2px; color:#cbd5e0;" id="progress-status-text">綠色區域：青少年生理發育安全熱量範圍</div>
+        </div>
+
+        <div id="diet-range-alert" class="alert-box alert-danger" style="display: none; margin-bottom: 12px;" role="alert" aria-live="polite"></div>
+        <div id="sport-warning" class="alert-box alert-warning" style="display: none;"></div>
+
+        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 15px;">
+            <h4>1. 從四大類選單選取運動項目：</h4>
+            <div class="grid-2">
+                <!-- a. 有氧耐力 -->
+                <div class="form-group">
+                    <label>a. 🏃‍♂️ 有氧耐力運動選擇：</label>
+                    <select class="plan-sport-select" id="sport-select-a" data-type="aerobic" onchange="toggleCustomSport(this); calculateAll();">
+                        <option value="游泳(較快/自由式/蝶式)" data-mets="10.0">游泳 (較快/自由式/蝶式) - METs: 10.0</option>
+                        <option value="足球/美式足球" data-mets="7.7">足球 / 美式足球 - METs: 7.7</option>
+                        <option value="慢跑/長跑" data-mets="7.0">慢跑 / 長跑 - METs: 7.0</option>
+                        <option value="有氧舞蹈/Zumba/Kpop" data-mets="6.8">有氧舞蹈 / Zumba / K-pop - METs: 6.8</option>
+                        <option value="網球/壁球" data-mets="6.6">網球 / 壁球 - METs: 6.6</option>
+                        <option value="游泳(慢/蛙式/仰式)" data-mets="6.3" selected>游泳 (慢/蛙式/仰式) - METs: 6.3</option>
+                        <option value="騎自行車/YouBike/飛輪" data-mets="6.0">騎自行車 / YouBike / 飛輪 - METs: 6.0</option>
+                        <option value="街舞(Hip-hop/Breaking)" data-mets="5.5">街舞 (Hip-hop / Breaking) - METs: 5.5</option>
+                        <option value="羽毛球/桌球" data-mets="5.1">羽毛球 / 桌球 - METs: 5.1</option>
+                        <option value="直排輪/滑板/蛇板" data-mets="5.1">直排輪 / 滑板 / 蛇板 - METs: 5.1</option>
+                        <option value="水上運動(衝浪/SUP)" data-mets="5.0">水上運動 (衝浪 / SUP) - METs: 5.0</option>
+                        <option value="手球/躲避球" data-mets="5.0">手球 / 躲避球 - METs: 5.0</option>
+                        <option value="鬼抓人/飛盤/漆彈" data-mets="4.5">鬼抓人 / 飛盤追逐 / 漆彈 - METs: 4.5</option>
+                        <option value="快走/通勤步行" data-mets="4.0">快走 / 通勤步行 - METs: 4.0</option>
+                        <option value="其他自訂" data-mets="custom">✨ 其他 (自訂項目與 METs)</option>
+                    </select>
+                    <div class="custom-sport-box">
+                        <input type="text" class="custom-name" id="custom-name-a" placeholder="輸入運動名稱" style="margin-bottom:4px;" oninput="calculateAll()">
+                        <input type="number" class="custom-mets" id="custom-mets-a" placeholder="輸入 METs 係數" value="5.0" step="0.1" oninput="calculateAll()">
+                    </div>
+                </div>
+
+                <!-- b. 肌力與阻力 -->
+                <div class="form-group">
+                    <label>b. 💪 肌力與阻力訓練選擇：</label>
+                    <select class="plan-sport-select" id="sport-select-b" data-type="strength" onchange="toggleCustomSport(this); calculateAll();">
+                        <option value="划船比賽" data-mets="12.4">划船比賽 - METs: 12.4</option>
+                        <option value="拳擊/拳擊袋擊打" data-mets="11.4">拳擊 / 擊打拳擊袋 - METs: 11.4</option>
+                        <option value="波比跳/登山者式" data-mets="8.0">波比跳 Burpees / 登山者式 - METs: 8.0</option>
+                        <option value="攀岩/抱石" data-mets="7.0">攀岩 / 抱石 - METs: 7.0</option>
+                        <option value="引體向上/單槓懸吊" data-mets="6.0">引體向上 / 單槓懸吊 - METs: 6.0</option>
+                        <option value="伏地挺身/深蹲/弓步蹲" data-mets="5.0" selected>伏地挺身 / 深蹲 / 弓步蹲 - METs: 5.0</option>
+                        <option value="仰臥起坐/棒式/橋式" data-mets="4.0">仰臥起坐 / 棒式 Plank / 橋式 - METs: 4.0</option>
+                        <option value="彈力帶/啞鈴操(1-3kg)" data-mets="4.0">彈力帶拉背 / 輕量啞鈴操 - METs: 4.0</option>
+                        <option value="其他自訂" data-mets="custom">✨ 其他 (自訂項目與 METs)</option>
+                    </select>
+                    <div class="custom-sport-box">
+                        <input type="text" class="custom-name" id="custom-name-b" placeholder="輸入運動名稱" style="margin-bottom:4px;" oninput="calculateAll()">
+                        <input type="number" class="custom-mets" id="custom-mets-b" placeholder="輸入 METs 係數" value="5.0" step="0.1" oninput="calculateAll()">
+                    </div>
+                </div>
+
+                <!-- c. 骨骼刺激 -->
+                <div class="form-group">
+                    <label>c. 🦴 骨骼刺激與垂直跳躍選擇：</label>
+                    <select class="plan-sport-select" id="sport-select-c" data-type="bone" onchange="toggleCustomSport(this); calculateAll();">
+                        <option value="跳繩(快/花式跳繩)" data-mets="12.6">跳繩 (快 / 花式跳繩) - METs: 12.6</option>
+                        <option value="跳繩(慢/單雙人)" data-mets="8.4" selected>跳繩 (慢 / 單雙人) - METs: 8.4</option>
+                        <option value="籃球(全場/搶籃板)" data-mets="8.3">籃球 (全場 / 搶籃板) - METs: 8.3</option>
+                        <option value="深蹲跳/波比跳接力" data-mets="8.0">深蹲跳 / 波比跳接力 - METs: 8.0</option>
+                        <option value="籃球(半場/投籃)" data-mets="6.3">籃球 (半場 / 投籃) - METs: 6.3</option>
+                        <option value="開合跳/彈跳床" data-mets="6.5">開合跳 / 彈跳床運動 - METs: 6.5</option>
+                        <option value="田徑跳高/跳遠" data-mets="6.0">田徑跳高 / 跳遠 / 三級跳 - METs: 6.0</option>
+                        <option value="其他自訂" data-mets="custom">✨ 其他 (自訂項目與 METs)</option>
+                    </select>
+                    <div class="custom-sport-box">
+                        <input type="text" class="custom-name" id="custom-name-c" placeholder="輸入運動名稱" style="margin-bottom:4px;" oninput="calculateAll()">
+                        <input type="number" class="custom-mets" id="custom-mets-c" placeholder="輸入 METs 係數" value="6.0" step="0.1" oninput="calculateAll()">
+                    </div>
+                </div>
+
+                <!-- d. 柔軟度與伸展 -->
+                <div class="form-group">
+                    <label>d. 🧘‍♀️ 柔軟度與關節伸展選擇：</label>
+                    <select class="plan-sport-select" id="sport-select-d" data-type="flex" onchange="toggleCustomSport(this); calculateAll();">
+                        <option value="跆拳道/踢腿與劈腿" data-mets="7.0">跆拳道 (踢腿與劈腿) - METs: 7.0</option>
+                        <option value="跳舞(快)/芭蕾/啦啦隊" data-mets="5.3">跳舞 (快) / 芭蕾 / 啦啦隊 - METs: 5.3</option>
+                        <option value="太極拳/空手道/防身術" data-mets="4.2">太極拳 / 空手道 / 防身術 - METs: 4.2</option>
+                        <option value="皮拉提斯(Pilates)" data-mets="3.5">皮拉提斯 Pilates - METs: 3.5</option>
+                        <option value="青少年瑜伽(Yoga)" data-mets="3.0" selected>青少年瑜伽 Yoga - METs: 3.0</option>
+                        <option value="坐姿體前彎/動靜態伸展" data-mets="2.5">坐姿體前彎 / 動靜態拉筋 - METs: 2.5</option>
+                        <option value="其他自訂" data-mets="custom">✨ 其他 (自訂項目與 METs)</option>
+                    </select>
+                    <div class="custom-sport-box">
+                        <input type="text" class="custom-name" id="custom-name-d" placeholder="輸入運動名稱" style="margin-bottom:4px;" oninput="calculateAll()">
+                        <input type="number" class="custom-mets" id="custom-mets-d" placeholder="輸入 METs 係數" value="3.0" step="0.1" oninput="calculateAll()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 10px;">
+                <div class="form-group">
+                    <label for="plan-days">每週預計運動天數</label>
+                    <select id="plan-days" onchange="isManualDiet = false; calculateAll()">
+                        <option value="3">3 天 (含 4 天 Rest Day 分散休養)</option>
+                        <option value="4" selected>4 天 (含 3 天 Rest Day 分散休養)</option>
+                        <option value="5">5 天 (含 2 天 Rest Day 分散休養)</option>
+                        <option value="6">6 天 (高強度運動習慣/校隊)</option>
+                        <option value="7">7 天 (每日規律持續)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="plan-time">每次運動時間 (分鐘)</label>
+                    <input type="number" id="plan-time" value="60" min="20" max="180" oninput="calculateAll()">
+                </div>
+            </div>
+        </div>
+
+        <h4 style="margin-top: 20px;">2. 自動分配一週運動計畫與 EAT 熱量表 (分散休養排程)：</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>星期</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th><th>日</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="row-type"><td><strong>運動種類</strong></td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr id="row-proj"><td><strong>運動項目</strong></td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr id="row-time"><td><strong>時間(分)</strong></td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+                <tr id="row-cal"><td><strong>EAT 消耗(kcal)</strong></td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+            </tbody>
+        </table>
+        <p style="font-size: 0.9rem; text-align: right; font-weight: bold; margin-top: 8px;">
+            一週總運動時間：<span id="total-sport-time" style="color: var(--primary-color);">0</span> 分鐘 | 
+            一週總 EAT 消耗：<span id="total-sport-cal" style="color: var(--primary-color);">0</span> kcal | 
+            每日平均 EAT：<span id="avg-sport-cal" style="color: var(--primary-color);">0</span> kcal/日
+        </p>
+    </div>
+
+    <!-- 六、 飲水與睡眠計畫 -->
+    <div class="section-card">
+        <h2 class="section-title">六、 每日飲水推導、睡眠與素養省思</h2>
+        
+        <div style="background: #ebf8ff; border: 1px solid #bee3f8; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+            <h4 style="margin: 0 0 8px 0; color: var(--primary-dark);">💧 青少年飲水公式：</h4>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label for="water-weight-input">我的體重 (kg) 再次確認：</label>
+                    <input type="number" id="water-weight-input" value="35" oninput="calculateWaterByWeight()">
+                </div>
+                <div class="form-group">
+                    <label>最低基礎飲水量 (35 ml/kg)：</label>
+                    <div id="water-min-res" style="font-size: 1.1rem; font-weight: bold; color: var(--primary-color); padding-top: 6px;">1225 ml</div>
+                </div>
+                <div class="form-group">
+                    <label>理想目標飲水量 (40 ml/kg)：</label>
+                    <div id="water-rec-res" style="font-size: 1.1rem; font-weight: bold; color: var(--success-color); padding-top: 6px;">1400 ml</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label for="water-target">我設定的每日目標飲水量 (ml)</label>
+                <input type="number" id="water-target" value="1500" oninput="saveLocalStorage()">
+            </div>
+            <div class="form-group">
+                <label for="sleep-target">每日目標睡眠 (小時)</label>
+                <input type="number" id="sleep-target" value="8" oninput="saveLocalStorage()">
+            </div>
+        </div>
+        <div class="form-group" style="margin-top: 10px;">
+            <label for="reflection">💡 我的健康目標承諾與具體執行策略：</label>
+            <textarea id="reflection" rows="3" placeholder="例如：我承諾未來 3 週減少喝手搖飲，改喝鮮奶或水；放學後打籃球 60 分鐘，維持 11 點前睡覺。" oninput="saveLocalStorage()"></textarea>
+        </div>
+    </div>
+
+    <!-- 七、 一鍵直接上傳教育雲端 -->
+    <div class="section-card no-print" style="background:#e6fffa; border:2px solid #319795; text-align:center;">
+        <h3 style="color:#234e52; margin-top:0;">🚀 完成計畫！直接繳交至老師的教育雲端</h3>
+        <p style="font-size:0.9rem; color:#2c7a7b;">請確認上面基本資料（班級、座號、姓名）已正確填寫，點擊下方按鈕將自動產生 PDF 並傳送上傳。</p>
+        <button class="btn btn-upload" id="upload-btn" onclick="submitToGoogleDrive()">📤 一鍵打包 PDF 並繳交作業</button>
+        <div id="result-msg" style="margin-top:10px; font-weight:bold;"></div>
+    </div>
+
+    <div class="grid-2 no-print">
+        <button class="btn btn-copy" onclick="copySummaryText()">📋 複製學習單摘要 (適合 Google Classroom 繳交)</button>
+        <button class="btn" style="background:#718096;color:white" onclick="clearLocalStorageData()">🧹 清除本機自動儲存資料</button>
+        <button class="btn btn-print" onclick="window.print()">🖨️ 一鍵列印 / 匯出 PDF 健康計畫單</button>
+    </div>
+</div>
+
+<script>
+    let isManualDiet = false;
+
+    let currentOfficialPortions = {
+        grain: "3-4 碗",
+        protein: "6 份",
+        dairy: "1.5-2 杯",
+        veg: "4 份",
+        fruit: "3 份",
+        oilNut: "油脂 4-5 份 + 堅果 1 份"
+    };
+
+    window.onload = function() {
+        loadLocalStorage();
+        updateKgOptions();
+        document.querySelectorAll('input[id], select[id], textarea[id]').forEach(el => {
+            el.addEventListener('change', saveLocalStorage);
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.addEventListener('input', saveLocalStorage);
+        });
+        
+        document.querySelectorAll('.plan-sport-select').forEach(sel => toggleCustomSport(sel));
+        
+        calculateAll();
+    };
+
+    function syncWeightAndCalc() {
+        const weightField = document.getElementById('weight');
+        if (weightField.value !== '' && Number(weightField.value) > 0) {
+            document.getElementById('water-weight-input').value = weightField.value;
+            calculateWaterByWeight(true);
+        }
+        calculateAll();
+    }
+
+    function calculateWaterByWeight(updateStudentTarget = false) {
+        const raw = document.getElementById('water-weight-input').value;
+        const w = Number(raw);
+        if (raw === '' || !Number.isFinite(w) || w <= 0 || w > 250) return;
+        const minW = Math.round(w * 35);
+        const recW = Math.round(w * 40);
+        document.getElementById('water-min-res').innerText = minW + " ml";
+        document.getElementById('water-rec-res').innerText = recW + " ml";
+        if (updateStudentTarget) document.getElementById('water-target').value = recW;
+        saveLocalStorage();
+    }
+
+    function updateKgOptions() {
+        const goal = document.getElementById('goal').value;
+        const kgSelect = document.getElementById('kg-target');
+        const previous = kgSelect.value;
+        kgSelect.innerHTML = '<option value="0">不設定體重變化（以健康行為為目標）</option>';
+        if (goal === 'gain_weight' || goal === 'gain_muscle') {
+            [[0.5,'+0.5 kg'],[1,'+1.0 kg'],[1.5,'+1.5 kg'],[2,'+2.0 kg']].forEach(([v,t])=>kgSelect.add(new Option(t,String(v))));
+        } else if (goal === 'lose_weight' || goal === 'lose_fat') {
+            [[-0.5,'-0.5 kg'],[-1,'-1.0 kg'],[-1.5,'-1.5 kg'],[-2,'-2.0 kg']].forEach(([v,t])=>kgSelect.add(new Option(t,String(v))));
+        }
+        if ([...kgSelect.options].some(o=>o.value===previous)) kgSelect.value=previous;
+        else if (goal === 'gain_weight' || goal === 'gain_muscle') kgSelect.value = '1';
+        else if (goal === 'lose_weight' || goal === 'lose_fat') kgSelect.value = '-1';
+        else kgSelect.value = '0';
+    }
+
+    function manualDietCalChange() {
+        isManualDiet = true;
+        calculateAll();
+    }
+
+    function toggleCustomFood(selectElem) {
+        const customInput = selectElem.parentNode.querySelector('.custom-food-input');
+        if (customInput) {
+            if (selectElem.value === 'custom') {
+                customInput.style.display = 'block';
+            } else {
+                customInput.style.display = 'none';
+            }
+        }
+    }
+
+    function toggleCustomSport(selectElem) {
+        const customBox = selectElem.parentNode.querySelector('.custom-sport-box');
+        const opt = selectElem.options[selectElem.selectedIndex];
+        if (opt && opt.dataset.mets === 'custom') {
+            customBox.style.display = 'block';
+        } else if (customBox) {
+            customBox.style.display = 'none';
+        }
+    }
+
+    function checkPortionHint(selectElem, type, min, max) {
+        const hintDiv = selectElem.parentNode.querySelector('.portion-hint');
+        if (!hintDiv) return;
+        const val = parseFloat(selectElem.value) || 0;
+        if (val === 0) {
+            hintDiv.innerText = "";
+        } else if (val >= min && val <= max) {
+            hintDiv.innerText = "👍 符合該餐衛福部建議調配量！";
+            hintDiv.className = "portion-hint hint-ok";
+        } else if (val < min) {
+            hintDiv.innerText = "💡 份量稍微偏少，可搭配點心補充。";
+            hintDiv.className = "portion-hint hint-warn";
+        } else {
+            hintDiv.innerText = "💡 份量較為充裕，請配合運動促進吸收！";
+            hintDiv.className = "portion-hint hint-warn";
+        }
+    }
+
+    function applyPreset(type) {
+        if (type === 'team') {
+            document.getElementById('sport-select-a').value = '足球/美式足球';
+            document.getElementById('sport-select-b').value = '伏地挺身/深蹲/弓步蹲';
+            document.getElementById('sport-select-c').value = '籃球(全場/搶籃板)';
+            document.getElementById('sport-select-d').value = '跆拳道/踢腿與劈腿';
+            document.getElementById('plan-days').value = '5';
+            document.getElementById('plan-time').value = '60';
+        } else if (type === 'commute') {
+            document.getElementById('sport-select-a').value = '騎自行車/YouBike/飛輪';
+            document.getElementById('sport-select-b').value = '仰臥起坐/棒式/橋式';
+            document.getElementById('sport-select-c').value = '跳繩(慢/單雙人)';
+            document.getElementById('sport-select-d').value = '青少年瑜伽(Yoga)';
+            document.getElementById('plan-days').value = '5';
+            document.getElementById('plan-time').value = '60';
+        } else if (type === 'home') {
+            document.getElementById('sport-select-a').value = '慢跑/長跑';
+            document.getElementById('sport-select-b').value = '伏地挺身/深蹲/弓步蹲';
+            document.getElementById('sport-select-c').value = '跳繩(慢/單雙人)';
+            document.getElementById('sport-select-d').value = '坐姿體前彎/動靜態伸展';
+            document.getElementById('plan-days').value = '5';
+            document.getElementById('plan-time').value = '60';
+        }
+        document.querySelectorAll('.plan-sport-select').forEach(sel => toggleCustomSport(sel));
+        isManualDiet = false;
+        calculateAll();
+    }
+
+    function calculateAll() {
+        const validation = document.getElementById('input-validation');
+        const required = [
+            ['age','年齡',12,17.5], ['height','身高',100,230], ['weight','體重',20,250],
+            ['waist','腰圍',30,200], ['hip','臀圍',30,220]
+        ];
+        const errors = [];
+        required.forEach(([id,label,min,max])=>{
+            const el=document.getElementById(id); const raw=el.value; const val=Number(raw);
+            el.removeAttribute('aria-invalid');
+            if (raw.trim()==='' || !Number.isFinite(val) || val<min || val>max) {
+                errors.push(`${label}請輸入 ${min}～${max} 之間的有效數值。`); el.setAttribute('aria-invalid','true');
+            }
+        });
+
+        if(errors.length){ validation.style.display='block'; validation.innerHTML='<strong>請先修正以下欄位：</strong><ul>'+errors.map(e=>'<li>'+e+'</li>').join('')+'</ul>'; return; }
+        validation.style.display='none';
+        saveLocalStorage();
+
+        const gender = document.getElementById('gender').value;
+        const age = Number(document.getElementById('age').value);
+        const height = Number(document.getElementById('height').value);
+        const weight = Number(document.getElementById('weight').value);
+        const waist = Number(document.getElementById('waist').value);
+        const hip = Number(document.getElementById('hip').value);
+        const bodyfatRawValue = document.getElementById('bodyfat').value;
+        const bodyfat = bodyfatRawValue === '' ? null : Number(bodyfatRawValue);
+        const palLevel = document.getElementById('pal-level').value;
+
+        document.getElementById('water-weight-input').value = weight;
+        calculateWaterByWeight(false);
+
+        const bmi = Number((weight / ((height/100) * (height/100))).toFixed(1));
+        const bmiRefs = {
+            male: { '12':[15.2,21.3,23.9], '12.5':[15.4,21.5,24.2], '13':[15.7,21.9,24.5], '13.5':[16.0,22.2,24.8], '14':[16.3,22.5,25.0], '14.5':[16.6,22.7,25.2], '15':[16.9,22.9,25.4], '15.5':[17.2,23.1,25.5], '16':[17.4,23.3,25.6], '16.5':[17.6,23.4,25.6], '17':[17.8,23.5,25.6], '17.5':[18.0,23.6,25.6] },
+            female: { '12':[15.2,21.3,23.5], '12.5':[15.4,21.6,23.9], '13':[15.7,21.9,24.3], '13.5':[16.0,22.2,24.6], '14':[16.3,22.5,24.9], '14.5':[16.5,22.7,25.1], '15':[16.7,22.7,25.2], '15.5':[16.9,22.7,25.3], '16':[17.1,22.7,25.3], '16.5':[17.2,22.7,25.3], '17':[17.3,22.7,25.3], '17.5':[17.3,22.7,25.3] }
+        };
+        const ref = bmiRefs[gender][String(age)] || [16.7, 22.7, 25.2];
+        const [bmiLow,bmiOver,bmiObese] = ref;
+        document.getElementById('res-bmi').innerText = bmi;
+        document.getElementById('res-whr').innerText = (waist / hip).toFixed(2);
+        document.getElementById('res-whtr').innerText = (waist / height).toFixed(2);
+        let bmiStatus = bmi < bmiLow ? '低於參考範圍' : bmi < bmiOver ? '參考範圍內' : bmi < bmiObese ? '高於參考範圍' : '高於肥胖參考切點';
+        let bmiClass = bmi < bmiLow ? 'badge-low' : bmi < bmiOver ? 'badge-normal' : 'badge-high';
+        document.getElementById('eval-bmi').innerHTML = `<span class="badge ${bmiClass}">${bmiStatus}</span>`;
+
+        // -------------------------------------------------------------
+        // 1. 防呆與警示文字功能（修正過輕選減重/減脂的方向矛盾及浮點數精準度）
+        // -------------------------------------------------------------
+        const goalVal = document.getElementById('goal').value;
+        const targetKg = parseFloat(document.getElementById('kg-target').value) || 0;
+        const goalWarnBox = document.getElementById('goal-warning');
+        let goalWarnings = [];
+
+        if (bmi < bmiLow && (goalVal === 'lose_weight' || goalVal === 'lose_fat')) {
+            goalWarnings.push("⚠️ 您的 BMI 評估為「體重過輕」，不建議選擇減重或減脂目標！發育期應重視營養均衡與適當增肌。");
+        } else if (bmi >= bmiOver && (goalVal === 'gain_weight' || goalVal === 'gain_muscle')) {
+            goalWarnings.push("⚠️ 您的 BMI 評估為「過重或肥胖」，不建議再額外增加體重！建議以改善生活飲食習慣與規律運動為主。");
+        }
+
+        if (targetKg !== 0) {
+            const projectedWeight = weight + targetKg;
+            const projectedBmi = Number((projectedWeight / ((height / 100) * (height / 100))).toFixed(1));
+            
+            // 只有當「體重過輕且目標是增重 (targetKg > 0)」或「體重過重且目標是減重 (targetKg < 0)」時，才計算並顯示達到正常範圍的預估週數
+            if (bmi < bmiLow && targetKg > 0) {
+                const targetWeightForNormal = Number((bmiLow * ((height / 100) * (height / 100))).toFixed(1));
+                const neededKg = Number((targetWeightForNormal - weight).toFixed(1));
+                const durationDays = Number(document.getElementById('plan-duration').value) || 21;
+                const rateKgPerDay = Math.abs(targetKg) / durationDays;
+                let estimateText = "";
+                if (rateKgPerDay > 0) {
+                    const totalDaysNeeded = Math.ceil(neededKg / rateKgPerDay);
+                    const totalWeeks = Math.ceil(totalDaysNeeded / 7);
+                    const totalMonths = (totalDaysNeeded / 30).toFixed(1);
+                    estimateText = `，若繼續保持目前的健康養成步調，約需 <strong>${totalWeeks} 週 (約 ${totalMonths} 個月)</strong> 即可順利達到正常 BMI 範圍 (${bmiLow.toFixed(1)})`;
+                }
+                goalWarnings.push(`💡 提示：調整 +${targetKg.toFixed(1)} kg 後，您的預估 BMI 為 <strong>${projectedBmi.toFixed(1)}</strong>（正常標準下限為 ${bmiLow.toFixed(1)}）${estimateText}。請持續維持良好生活習慣！`);
+            } else if (bmi >= bmiOver && targetKg < 0) {
+                const targetNormalUpper = bmiOver - 0.1;
+                const targetWeightForNormal = Number((targetNormalUpper * ((height / 100) * (height / 100))).toFixed(1));
+                const neededKg = Number((weight - targetWeightForNormal).toFixed(1));
+                const durationDays = Number(document.getElementById('plan-duration').value) || 21;
+                const rateKgPerDay = Math.abs(targetKg) / durationDays;
+                let estimateText = "";
+                if (rateKgPerDay > 0) {
+                    const totalDaysNeeded = Math.ceil(neededKg / rateKgPerDay);
+                    const totalWeeks = Math.ceil(totalDaysNeeded / 7);
+                    const totalMonths = (totalDaysNeeded / 30).toFixed(1);
+                    estimateText = `，若繼續保持目前的健康習慣與運動步調，約需 <strong>${totalWeeks} 週 (約 ${totalMonths} 個月)</strong> 即可順利回到正常 BMI 範圍 (${targetNormalUpper.toFixed(1)})`;
+                }
+                goalWarnings.push(`💡 提示：減少 ${Math.abs(targetKg).toFixed(1)} kg 後，您的預估 BMI 為 <strong>${projectedBmi.toFixed(1)}</strong>（正常標準上限為 ${targetNormalUpper.toFixed(1)}）${estimateText}。青少年安全減重宜循序漸進！`);
+            } else {
+                // 如果方向相反（例如過輕卻要減重，或是過重卻要增重），直接提示預估 BMI 但不顯示錯誤的達標週數
+                let directionDesc = targetKg > 0 ? `增加 ${targetKg.toFixed(1)} kg` : `減少 ${Math.abs(targetKg).toFixed(1)} kg`;
+                goalWarnings.push(`💡 提示：若照此計畫${directionDesc}，您的預估 BMI 將變為 <strong>${projectedBmi.toFixed(1)}</strong>（正常標準區間：${bmiLow.toFixed(1)} ~ ${(bmiOver - 0.1).toFixed(1)}）。建議依據身體評估結果調整您的健康目標方向！`);
+            }
+        }
+
+        if (goalWarnings.length > 0) {
+            goalWarnBox.style.display = 'block';
+            goalWarnBox.className = 'alert-box alert-warning';
+            goalWarnBox.innerHTML = goalWarnings.join('<br>');
+        } else {
+            goalWarnBox.style.display = 'block';
+            goalWarnBox.className = 'alert-box alert-warning';
+            goalWarnBox.innerText = '計畫以規律飲食、活動與睡眠等健康行為為主；青少年不建議自行進行嚴格減重或節食。';
+        }
+
+        const whr = waist / hip; const whtr = waist / height;
+        const whrCutoff = gender === 'male' ? 0.92 : 0.88;
+        const whrPass = whr < whrCutoff;
+        document.getElementById('eval-whr').innerHTML = `<span class="badge ${whrPass ? 'badge-normal' : 'badge-high'}">${whrPass ? '符合標準' : '超標'}</span>`;
+        document.getElementById('eval-whtr').innerHTML = `<span class="badge ${whtr < 0.5 ? 'badge-normal' : 'badge-high'}">${whtr < 0.5 ? '健康範圍 (<0.5)' : '風險升高 (≥0.5)'}</span>`;
+
+        let calculatedBmr = gender === 'male' ? Math.round(17.5 * weight + 651) : Math.round(12.2 * weight + 746);
+        let finalBmr = calculatedBmr < 1200 ? 1200 : calculatedBmr;
+        document.getElementById('res-bmr').innerText = finalBmr + ' kcal';
+        document.getElementById('eval-bmr-type').innerText = calculatedBmr < 1200 ? "Schofield (認列底線 1200)" : "Schofield 青少年公式";
+
+        let neat = calculateNeatFromTable(weight, palLevel);
+        document.getElementById('res-neat').innerText = neat + ' kcal';
+
+        const planDays = Number(document.getElementById('plan-duration').value) || 21;
+        const totalTargetCal = Math.round(targetKg * 7700);
+        const dailyTargetCal = Math.round(totalTargetCal / planDays);
+        document.getElementById('duration-label').innerText = planDays;
+        document.getElementById('target-kg-desc').innerText = (targetKg > 0 ? '+' : '') + targetKg.toFixed(1) + ' kg';
+        document.getElementById('target-total-cal').innerText = (totalTargetCal > 0 ? '+' : '') + totalTargetCal + ' kcal';
+        document.getElementById('daily-target-cal').innerText = (dailyTargetCal > 0 ? '+' : '') + dailyTargetCal + ' kcal/日';
+
+        let dietTierName = "";
+        let minDiet = 0, maxDiet = 0;
+
+        if (gender === 'male') {
+            if (palLevel === 'moderate' || palLevel === 'heavy') {
+                dietTierName = "男 (適度) 2800 kcal 級距"; minDiet = 1940; maxDiet = 2800;
+                setOfficialPortions("4.5", "1.5", "3", "8", "1.5-2", "5", "4", "8", "7");
+            } else {
+                dietTierName = "男 (稍低) 2400 kcal 級距"; minDiet = 1635; maxDiet = 2400;
+                setOfficialPortions("4", "1.5", "2.5", "6", "1.5-2", "5", "4", "7", "6");
+            }
+        } else {
+            if (palLevel === 'moderate' || palLevel === 'heavy') {
+                dietTierName = "女 (適度) 2350 kcal 級距"; minDiet = 1565; maxDiet = 2350;
+                setOfficialPortions("4", "1.5", "2.5", "6", "1.5-2", "4", "4", "6", "5");
+            } else {
+                dietTierName = "女 (稍低) 2050 kcal 級距"; minDiet = 1435; maxDiet = 2050;
+                setOfficialPortions("3", "1", "2", "6", "1.5-2", "4", "3", "6", "5");
+            }
+        }
+
+        document.getElementById('diet-tier-name').innerText = dietTierName;
+        document.getElementById('diet-range').innerText = `${minDiet} ~ ${maxDiet} kcal`;
+
+        // 運動排程與 EAT 計算
+        const sportA = getSelectedSportInfo('sport-select-a');
+        const sportB = getSelectedSportInfo('sport-select-b');
+        const sportC = getSelectedSportInfo('sport-select-c');
+        const sportD = getSelectedSportInfo('sport-select-d');
+
+        const activeDays = Number(document.getElementById('plan-days').value);
+        const minsPerSession = Number(document.getElementById('plan-time').value);
+
+        const schedule = buildWeeklySchedule(activeDays, minsPerSession, weight, [sportA, sportB, sportC, sportD]);
+        renderScheduleTable(schedule);
+
+        const totalSportTime = schedule.reduce((sum, d) => sum + d.minutes, 0);
+        const totalSportCal = schedule.reduce((sum, d) => sum + d.calories, 0);
+        const avgDailyEat = Math.round(totalSportCal / 7);
+
+        document.getElementById('total-sport-time').innerText = totalSportTime;
+        document.getElementById('total-sport-cal').innerText = totalSportCal;
+        document.getElementById('avg-sport-cal').innerText = avgDailyEat;
+
+        // 飲食卡路里與目標卡路里邏輯（優先以選擇的增減公斤數所決定的計畫目標卡路里為主）
+        let customDietInput = document.getElementById('custom-diet-cal');
+        let currentDietCal = Number(customDietInput.value);
+
+        if (!isManualDiet || !currentDietCal) {
+            currentDietCal = Math.round(finalBmr + neat + avgDailyEat + dailyTargetCal);
+            if (currentDietCal < minDiet) currentDietCal = minDiet;
+            if (currentDietCal > maxDiet) currentDietCal = maxDiet;
+            customDietInput.value = currentDietCal;
+        }
+
+        // -------------------------------------------------------------
+        // 2. 熱量平衡算式顯示（計畫的目標卡路里 vs 實際的目標卡路里）
+        // -------------------------------------------------------------
+        // 計畫的目標卡路里：依據使用者在「短期健康計畫」選擇的體重變化 (`dailyTargetCal`)
+        const plannedTargetCal = dailyTargetCal;
+        
+        // 實際的目標卡路里：依據下方飲食卡路里與運動消耗計算出來的實際差值
+        const rawActualTarget = Math.round(currentDietCal - (finalBmr + neat + avgDailyEat));
+        let actualTargetCal = rawActualTarget;
+
+        const dietAlertBox = document.getElementById('diet-range-alert');
+        let isClamped = false;
+
+        if (currentDietCal < minDiet) {
+            dietAlertBox.style.display = 'block';
+            dietAlertBox.innerText = `⚠️ 您輸入的飲食熱量 (${currentDietCal} kcal) 低於青少年衛福部建議安全範圍下限 (${minDiet} kcal)！已將卡路里連動維護在安全邊界。`;
+            actualTargetCal = Math.round(minDiet - (finalBmr + neat + avgDailyEat));
+            isClamped = true;
+        } else if (currentDietCal > maxDiet) {
+            dietAlertBox.style.display = 'block';
+            dietAlertBox.innerText = `⚠️ 您輸入的飲食熱量 (${currentDietCal} kcal) 高於青少年衛福部建議安全範圍上限 (${maxDiet} kcal)！已將卡路里連動維護在安全邊界。`;
+            actualTargetCal = Math.round(maxDiet - (finalBmr + neat + avgDailyEat));
+            isClamped = true;
+        } else {
+            dietAlertBox.style.display = 'none';
+        }
+
+        // 顯示規則：預設以「計畫的目標卡路里」為主。若因飲食或運動調整導致實際卡路里與計畫有落差（或觸發上下限防呆），則同時呈現「計畫目標卡路里」與「實際目標卡路里」雙欄位參考
+        const targetDisplayElem = document.getElementById('f-target');
+        const formattedPlanned = (plannedTargetCal > 0 ? '+' : '') + plannedTargetCal;
+        const formattedActual = (actualTargetCal > 0 ? '+' : '') + actualTargetCal;
+
+        if (plannedTargetCal !== actualTargetCal || isClamped) {
+            targetDisplayElem.innerHTML = `${formattedPlanned} <span style="font-size:0.8rem; color:#f6ad55; font-weight:normal;">(實際目標卡路里: ${formattedActual})</span>`;
+        } else {
+            targetDisplayElem.innerText = formattedPlanned;
+        }
+
+        document.getElementById('f-diet').innerText = currentDietCal;
+        document.getElementById('f-bmr').innerText = finalBmr;
+        document.getElementById('f-neat').innerText = neat;
+        document.getElementById('f-sport').innerText = avgDailyEat;
+
+        // 進度條比例計算
+        const barFill = document.getElementById('progress-bar-fill');
+        const progressPercent = Math.min(Math.max(((currentDietCal - minDiet) / (maxDiet - minDiet)) * 100, 5), 100);
+        barFill.style.width = progressPercent + '%';
+
+        updateBodyAdvice(bmi, bmiLow, bmiOver, bmiObese, whr, whrCutoff, whtr, bodyfat, gender);
+        onMealChange();
+    }
+
+    function calculateNeatFromTable(weight, pal) {
+        if (pal === 'light') return Math.round(weight * 5.5);
+        if (pal === 'heavy') return Math.round(weight * 9.5);
+        return Math.round(weight * 7.5); // moderate
+    }
+
+    function setOfficialPortions(gUnref, gRef, gTotal, pTotal, dTotal, vTotal, fTotal, oTotal, nTotal) {
+        currentOfficialPortions = {
+            grain: `${gTotal} 碗 (未精製 ${gUnref} 碗 + 其他 ${gRef} 碗)`,
+            protein: `${pTotal} 份`,
+            dairy: `${dTotal} 杯`,
+            veg: `${vTotal} 份`,
+            fruit: `${fTotal} 份`,
+            oilNut: `油脂 ${oTotal} 份 + 堅果 1 份`
+        };
+        document.getElementById('portion-grain').innerText = `${gTotal} 碗`;
+        document.getElementById('portion-grain-detail').innerText = `(未精製 ${gUnref} 碗 + 其他 ${gRef} 碗)`;
+        document.getElementById('portion-protein').innerText = `${pTotal} 份`;
+        document.getElementById('portion-dairy').innerText = `${dTotal} 杯`;
+        document.getElementById('portion-veg').innerText = `${vTotal} 份`;
+        document.getElementById('portion-fruit').innerText = `${fTotal} 份`;
+        document.getElementById('portion-oil-nut').innerText = `${oTotal} 份`;
+        document.getElementById('portion-oil-nut-detail').innerText = `(烹調油脂 ${oTotal} 份 + 堅果 1 份)`;
+    }
+
+    function getSelectedSportInfo(selectId) {
+        const sel = document.getElementById(selectId);
+        const opt = sel.options[sel.selectedIndex];
+        let name = opt.value;
+        let mets = parseFloat(opt.dataset.mets);
+        
+        if (opt.dataset.mets === 'custom') {
+            const customBox = sel.parentNode.querySelector('.custom-sport-box');
+            name = customBox.querySelector('.custom-name').value || '自訂運動';
+            mets = parseFloat(customBox.querySelector('.custom-mets').value) || 4.0;
+        }
+        return { name, mets, type: sel.dataset.type };
+    }
+
+    function buildWeeklySchedule(activeDays, mins, weight, sports) {
+        const days = ['一', '二', '三', '四', '五', '六', '日'];
+        let activeIndices = [];
+        if (activeDays === 3) activeIndices = [0, 2, 4];
+        else if (activeDays === 4) activeIndices = [0, 2, 4, 5];
+        else if (activeDays === 5) activeIndices = [0, 1, 3, 4, 5];
+        else if (activeDays === 6) activeIndices = [0, 1, 2, 3, 4, 5];
+        else activeIndices = [0, 1, 2, 3, 4, 5, 6];
+
+        let result = [];
+        let sportIdx = 0;
+
+        for (let i = 0; i < 7; i++) {
+            if (activeIndices.includes(i)) {
+                const s = sports[sportIdx % sports.length];
+                sportIdx++;
+                const cal = Math.round(s.mets * weight * (mins / 60) * 1.05);
+                result.push({ day: days[i], type: s.type, name: s.name, minutes: mins, calories: cal });
+            } else {
+                result.push({ day: days[i], type: 'rest', name: '休養與伸展', minutes: 0, calories: 0 });
+            }
+        }
+        return result;
+    }
+
+    function renderScheduleTable(schedule) {
+        const typeRow = document.getElementById('row-type');
+        const projRow = document.getElementById('row-proj');
+        const timeRow = document.getElementById('row-time');
+        const calRow = document.getElementById('row-cal');
+
+        typeRow.innerHTML = '<td><strong>運動種類</strong></td>' + schedule.map(s => `<td>${getSportTypeBadge(s.type)}</td>`).join('');
+        projRow.innerHTML = '<td><strong>運動項目</strong></td>' + schedule.map(s => `<td style="font-size:0.8rem;">${s.name}</td>`).join('');
+        timeRow.innerHTML = '<td><strong>時間(分)</strong></td>' + schedule.map(s => `<td>${s.minutes}</td>`).join('');
+        calRow.innerHTML = '<td><strong>EAT 消耗</strong></td>' + schedule.map(s => `<td>${s.calories}</td>`).join('');
+    }
+
+    function getSportTypeBadge(type) {
+        if (type === 'aerobic') return '<span class="type-tag tag-aerobic">有氧</span>';
+        if (type === 'strength') return '<span class="type-tag tag-strength">肌力</span>';
+        if (type === 'bone') return '<span class="type-tag tag-bone">骨骼</span>';
+        if (type === 'flex') return '<span class="type-tag tag-flex">柔軟</span>';
+        return '<span class="badge" style="background:#e2e8f0;color:#4a5568;">休息</span>';
+    }
+
+    function updateBodyAdvice(bmi, bmiLow, bmiOver, bmiObese, whr, whrCutoff, whtr, bodyfat, gender) {
+        const adviceBox = document.getElementById('body-type-advice');
+        let text = "";
+
+        if (bmi < bmiLow) {
+            text += "• <strong>BMI 評估過輕：</strong>建議補足三大營養素，適度搭配阻力訓練以促進發育與肌肉發育。<br>";
+        } else if (bmi < bmiOver) {
+            text += "• <strong>BMI 評估正常：</strong>請繼續維持規律運動與均衡飲食習慣。<br>";
+        } else {
+            text += "• <strong>BMI 評估過重/肥胖：</strong>建議多選取未精製全穀類與高纖蔬菜，維持運動習慣減緩體脂累積。<br>";
+        }
+
+        if (whr >= whrCutoff) {
+            text += `• <strong>腰臀比 (${whr.toFixed(2)}) 偏高：</strong>顯示腹部脂肪較集中，建議減少含糖飲料與高油炸物。<br>`;
+        }
+        if (whtr >= 0.5) {
+            text += `• <strong>腰高比 (${whtr.toFixed(2)}) ≥ 0.5：</strong>腰圍已達身高一半，建議結合每週 150 分鐘以上有氧運動。<br>`;
+        }
+
+        if (bodyfat !== null) {
+            text += `• <strong>體脂率 (${bodyfat}%)：</strong>可作為長期肌肉與脂肪比例變化的健康參考指標。`;
+        }
+
+        adviceBox.innerHTML = "🔍 <strong>身體狀況特徵評估與建議：</strong><br>" + text;
+    }
+
+    function onMealChange() {
+        const getMealText = (id) => {
+            const sel = document.getElementById(id);
+            if (!sel) return '';
+            if (sel.value === 'custom') {
+                const customInp = document.getElementById(id + '-custom');
+                return customInp ? (customInp.value || '自訂食物') : '自訂食物';
+            }
+            return sel.value;
+        };
+
+        const getMealPortion = (id) => {
+            const sel = document.getElementById(id + '-p');
+            if (!sel) return 0;
+            const valStr = String(sel.value);
+            if (valStr.includes('-')) {
+                const parts = valStr.split('-');
+                return (parseFloat(parts[0]) + parseFloat(parts[1])) / 2 || 1;
+            }
+            return parseFloat(valStr) || 0;
+        };
+
+        const totals = { grain: 0, protein: 0, dairy: 0, veg: 0, fruit: 0, oilNut: 0 };
+        const items = { grain: [], protein: [], dairy: [], veg: [], fruit: [], oilNut: [] };
+
+        ['bf', 'lu', 'dn', 'sn'].forEach(m => {
+            ['g', 'p', 'd', 'v', 'f', 'n'].forEach(typeKey => {
+                const food = getMealText(`${m}-${typeKey}`);
+                const portion = getMealPortion(`${m}-${typeKey}`);
+                if (food && food !== '無' && portion > 0) {
+                    const mapName = { g: 'grain', p: 'protein', d: 'dairy', v: 'veg', f: 'fruit', n: 'oilNut' }[typeKey];
+                    totals[mapName] += portion;
+                    items[mapName].push(`${food} (${portion})`);
+                }
+            });
+        });
+
+        // Dynamic range parser based on currentOfficialPortions strings
+        const parseRange = (str, defMin, defMax) => {
+            if (!str) return { min: defMin, max: defMax };
+            const matches = str.match(/\d+(\.\d+)?/g);
+            if (!matches || matches.length === 0) return { min: defMin, max: defMax };
+            if (str.includes('-')) {
+                const parts = str.split('-');
+                return { min: parseFloat(parts[0]) || defMin, max: parseFloat(parts[1]) || defMax };
+            } else {
+                const val = parseFloat(matches[0]);
+                return { min: Math.max(0, val - 0.5), max: val + 0.5 };
+            }
+        };
+
+        const targetRanges = {
+            grain: parseRange(currentOfficialPortions.grain, 3, 4),
+            protein: parseRange(currentOfficialPortions.protein, 5, 7),
+            dairy: parseRange(currentOfficialPortions.dairy, 1.5, 2),
+            veg: parseRange(currentOfficialPortions.veg, 3, 5),
+            fruit: parseRange(currentOfficialPortions.fruit, 2, 4),
+            oilNut: parseRange(currentOfficialPortions.oilNut, 4, 6)
+        };
+
+        const tbody = document.getElementById('meal-compare-body');
+        const rows = [
+            { name: '🥣 全穀雜糧類', key: 'grain', std: currentOfficialPortions.grain, unit: '碗' },
+            { name: '🥩 豆魚蛋肉類', key: 'protein', std: currentOfficialPortions.protein, unit: '份' },
+            { name: '🥛 乳品類', key: 'dairy', std: currentOfficialPortions.dairy, unit: '杯' },
+            { name: '🥦 蔬菜類', key: 'veg', std: currentOfficialPortions.veg, unit: '份' },
+            { name: '🍎 水果類', key: 'fruit', std: currentOfficialPortions.fruit, unit: '份' },
+            { name: '🥑 油脂與堅果種子類', key: 'oilNut', std: currentOfficialPortions.oilNut, unit: '份' }
+        ];
+
+        tbody.innerHTML = rows.map(r => {
+            const currentTotal = totals[r.key];
+            const range = targetRanges[r.key];
+            let badgeClass = 'badge-normal';
+            let statusText = '👍 符合衛福部建議範圍！';
+
+            if (currentTotal < range.min) {
+                badgeClass = 'badge-low';
+                statusText = `⚠️ 份量偏少（建議達 ${range.min} ${r.unit} 以上）`;
+            } else if (currentTotal > range.max) {
+                badgeClass = 'badge-high';
+                statusText = `⚠️ 份量較多（建議控制在 ${range.max} ${r.unit} 內）`;
+            }
+
+            const itemList = items[r.key].length > 0 ? items[r.key].join(', ') : '尚未選擇';
+            return `
+                <tr>
+                    <td><strong>${r.name}</strong></td>
+                    <td style="font-size:0.85rem;">${itemList} <br><strong>小計：${currentTotal.toFixed(1).replace('.0','')} ${r.unit}</strong></td>
+                    <td>${r.std}</td>
+                    <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                </tr>
+            `;
+        }).join('');
+
+        saveLocalStorage();
+    }
+
+    function saveLocalStorage() {
+        const data = {};
+        document.querySelectorAll('input[id], select[id], textarea[id]').forEach(el => {
+            if (el.type === 'checkbox') {
+                data[el.id] = el.checked;
+            } else {
+                data[el.id] = el.value;
+            }
+        });
+        localStorage.setItem('health_calculator_v11', JSON.stringify(data));
+    }
+
+    function loadLocalStorage() {
+        const raw = localStorage.getItem('health_calculator_v11');
+        if (!raw) return;
+        try {
+            const data = JSON.parse(raw);
+            Object.keys(data).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    // 🎯 微調：過濾掉 undefined 或字串 "undefined"，避免欄位被汙染
+                    if (data[id] !== undefined && data[id] !== null && data[id] !== "undefined") {
+                        if (el.type === 'checkbox') {
+                            el.checked = data[id];
+                        } else {
+                            el.value = data[id];
+                        }
+                    }
+                }
+            });
+        } catch(e) {
+            console.error("載入本地儲存失敗", e);
+        }
+    }
+
+    function clearLocalStorageData() {
+        if (confirm("確定要清除所有機台本機備份的紀錄嗎？")) {
+            localStorage.removeItem('health_calculator_v11');
+            location.reload();
+        }
+    }
+
+    function copySummaryText() {
+        const stuClass = document.getElementById('stu-class').value;
+        const stuNo = document.getElementById('stu-no').value;
+        const stuName = document.getElementById('stu-name').value;
+        const bmi = document.getElementById('res-bmi').innerText;
+        const bmr = document.getElementById('res-bmr').innerText;
+        const neat = document.getElementById('res-neat').innerText;
+        const targetCal = document.getElementById('f-target').innerText;
+        const dietCal = document.getElementById('custom-diet-cal').value;
+        const reflection = document.getElementById('reflection').value;
+
+        const summary = `【青少年健康體型計畫】
+班級：${stuClass} | 座號：${stuNo} | 姓名：${stuName}
+BMI：${bmi} | BMR：${bmr} | NEAT：${neat}
+每日飲食目標卡路里：${dietCal} kcal | 目標調整：${targetCal} kcal
+健康計畫個人承諾：
+${reflection}`;
+
+        navigator.clipboard.writeText(summary).then(() => {
+            alert("已成功將學習單摘要複製至剪貼簿！可直接貼上至 Google Classroom 作業簡答。");
+        });
+    }
+
+    function submitToGoogleDrive() {
+        // 🎯 微調：確保讀取值乾淨且加上防呆檢查
+        const clsField = document.getElementById('stu-class');
+        const noField = document.getElementById('stu-no');
+        const nameField = document.getElementById('stu-name');
+
+        let cls = clsField ? clsField.value.trim() : '';
+        let no = noField ? noField.value.trim() : '';
+        let name = nameField ? nameField.value.trim() : '';
+
+        if (cls === 'undefined') cls = '';
+        if (no === 'undefined') no = '';
+        if (name === 'undefined') name = '';
+
+        const email = document.getElementById('stu-email') ? document.getElementById('stu-email').value.trim() : '';
+
+        if (!cls || !no || !name) {
+            alert("⚠️【無法上傳】請先完整填寫基本資料中的【班級】、【座號】與【姓名】才能進行作業繳交喔！");
+            if (clsField && cls === '') clsField.value = '';
+            if (noField && no === '') noField.value = '';
+            if (nameField && name === '') nameField.value = '';
+            return;
+        }
+
+        const overlay = document.getElementById('upload-overlay');
+        overlay.style.display = 'flex';
+        const uploadBtn = document.getElementById('upload-btn');
+        if (uploadBtn) uploadBtn.disabled = true;
+        document.getElementById('upload-status-text').innerText = "正在打包 PDF 並上傳至雲端與寄送信件...";
+
+        // 強制滾動到頂端，避免 html2canvas 抓取座標偏移導致空白
+        window.scrollTo(0, 0);
+
+        const summary = `班級：${cls} | 座號：${no} | 姓名：${name} | Email：${email || '未填寫'}
+BMI：${document.getElementById('res-bmi').innerText}
+飲食目標：${document.getElementById('custom-diet-cal').value} kcal
+目標飲水：${document.getElementById('water-target').value} ml
+承諾：${document.getElementById('reflection').value}`;
+
+        const element = document.getElementById('pdf-content');
+        
+        // 確保列印/轉檔時背景為純白，避免透明導致空白頁
+        element.style.backgroundColor = "#ffffff";
+
+        const fileNameStr = `${cls}_${no}_${name}_健康計畫單.pdf`;
+
+        // 優化版：精準控制分頁與防切斷的 PDF 設定參數
+        const opt = {
+            margin:       [0.4, 0.4, 0.4, 0.4], // 四周維持適當邊距 (吋)
+            filename:     fileNameStr,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { 
+                scale: 2,                 
+                useCORS: true,          
+                letterRendering: true,
+                windowWidth: document.documentElement.offsetWidth 
+            },
+            jsPDF:        { 
+                unit: 'in', 
+                format: 'letter', 
+                orientation: 'portrait' 
+            },
+            // 🎯 關鍵修正：透過 CSS 選擇器強制保護大標題、卡片與表格不被斷開
+            pagebreak:    { 
+                mode: ['css', 'legacy'], 
+                avoid: ['.section-card', 'table', '.meal-box', 'tr', 'h2', 'h3'] 
+            } 
+        };
+
+        // 🎯 核心修正：使用 outputPdf('datauristring') 轉為 Base64 字串透過 fetch 上傳至 Google Apps Script 雲端
+        html2pdf().set(opt).from(element).outputPdf('datauristring').then(function(pdfDataUri) {
+            const payload = {
+                className: cls,
+                studentNo: no,
+                studentName: name,
+                studentEmail: email,
+                fileName: fileNameStr,
+                summaryText: summary,
+                pdfBase64: pdfDataUri
+
+            };
+
+            // 📌 請在此處貼上您的 Google Apps Script 部署網址（https://script.google.com/...）
+            const gasUrl = 'https://script.google.com/macros/s/AKfycbxJne57O2rHVUpHNJC6ZUmF26niaScA9TDCsrSRnumrZDx6ruaQ4Zgrm7FLK2sG64np/exec';
+            fetch(gasUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                overlay.style.display = 'none';
+                if (uploadBtn) uploadBtn.disabled = false;
+                document.getElementById('result-msg').innerHTML = `<span style="color:#276749;">✅ 已成功將 PDF 打包並上傳至老師雲端${email ? '，並已同步寄送副本至您的信箱 (' + email + ')' : ''}！檔案名稱：${fileNameStr}</span>`;
+                alert(`🎉【上傳成功】 
+
+您的健康計畫單已成功傳送至老師的雲端！
+檔案名稱：${fileNameStr}
+${email ? '副本已同時發送至您的信箱：' + email : '（未填寫 Email，若需副本請自行備份）'}
+
+請確認畫面下方顯示綠色打勾即完成繳交。`);
+            }).catch(err => {
+                overlay.style.display = 'none';
+                if (uploadBtn) uploadBtn.disabled = false;
+                alert(`❌【上傳失敗】
+
+連線至雲端伺服器時發生錯誤（原因：${err.message || '網路連線異常'}）。
+請檢查您的網路狀態，或直接使用「一鍵列印 / 匯出 PDF」按鈕備份檔案交給老師！`);
+            });
+        }).catch(err => {
+            overlay.style.display = 'none';
+            if (uploadBtn) uploadBtn.disabled = false;
+            alert(`❌【PDF 產出失敗】
+
+在打包 PDF 時發生問題（原因：${err.message || '未知錯誤'}）。
+請重新整理頁面或直接使用「一鍵列印 / 匯出 PDF」按鈕備份。`);
+        });
+    }
+</script>
+
+</body>
+</html>
