@@ -320,8 +320,8 @@
                     <option value="gain_weight" selected>增加體重（以健康行為為主）</option>
                     <option value="gain_muscle">增進肌力與肌肉發展</option>
                     <option value="maintain">維持健康與規律生活</option>
-                    <option value="lose_weight">改善生活習慣（不以減重為必達標）</option>
-                    <option value="lose_fat">提升體能與健康飲食</option>
+                    <option value="lose_weight">減重（以調整飲食與運動習慣為主）</option>
+                    <option value="lose_fat">減脂（以調整飲食與運動習慣為主）</option>
                 </select>
             </div>
             <div class="form-group">
@@ -1568,18 +1568,18 @@
         if (gender === 'male') {
             if (palLevel === 'moderate' || palLevel === 'heavy') {
                 dietTierName = "男 (適度) 2800 kcal 級距"; minDiet = 1940; maxDiet = 2800;
-                setOfficialPortions("4.5", "1.5", "3", "8", "1.5-2", "5", "4", "8", "7");
+                setOfficialPortions("1.5", "3", "4.5", "8", "2", "5", "4", "8", "1");
             } else {
                 dietTierName = "男 (稍低) 2400 kcal 級距"; minDiet = 1635; maxDiet = 2400;
-                setOfficialPortions("4", "1.5", "2.5", "6", "1.5-2", "5", "4", "7", "6");
+               setOfficialPortions("1.5", "2.5", "4", "6", "1.5", "5", "4", "7", "1");
             }
         } else {
             if (palLevel === 'moderate' || palLevel === 'heavy') {
                 dietTierName = "女 (適度) 2350 kcal 級距"; minDiet = 1565; maxDiet = 2350;
-                setOfficialPortions("4", "1.5", "2.5", "6", "1.5-2", "4", "4", "6", "5");
+                setOfficialPortions("1.5", "2.5", "4", "6", "1.5", "4", "4", "6", "1");
             } else {
                 dietTierName = "女 (稍低) 2050 kcal 級距"; minDiet = 1435; maxDiet = 2050;
-                setOfficialPortions("3", "1", "2", "6", "1.5-2", "4", "3", "6", "5");
+                setOfficialPortions("1", "2", "3", "6", "1.5", "4", "3", "6", "1");
             }
         }
 
